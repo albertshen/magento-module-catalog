@@ -4,19 +4,19 @@
  * Copyright © PHP Digital, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace AlbertMage\Catalog\Api;
+namespace AlbertMage\Catalog\Model;
 
 /**
- * Interface CategoriesInterface
+ * Interface ProductListInterface
  * @api
  * @since 101.0.0
  */
-interface CategoriesInterface
+interface ProductListInterface
 {
     /**
-     * Get categories
+     * Get product list
      *
      * @return array
      */
-    public function getCategories();
+    public function getList($collection);
 }

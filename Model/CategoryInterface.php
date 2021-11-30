@@ -7,17 +7,16 @@
 namespace AlbertMage\Catalog\Model;
 
 /**
- * Interface CategoriesInterface
+ * Interface ProductListInterface
  * @api
  * @since 101.0.0
  */
-class Categories implements \AlbertMage\Catalog\Api\CategoriesInterface
+interface CategoryInterface
 {
     /**
-     * @inheritdoc
+     * Normalize Categories
+     *
+     * @return array
      */
-    public function getCategories()
-    {
-        
-    }
+    public function normalizeCategories($categories);
 }

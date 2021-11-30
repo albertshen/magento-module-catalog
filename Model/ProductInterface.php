@@ -7,17 +7,16 @@
 namespace AlbertMage\Catalog\Model;
 
 /**
- * Interface ProductsInterface
+ * Interface ProductInterface
  * @api
  * @since 101.0.0
  */
-class Products implements \AlbertMage\Catalog\Api\CategoriesInterface
+interface ProductInterface
 {
     /**
-     * @inheritdoc
+     * Get product
+     *
+     * @return array
      */
-    public function getProducts()
-    {
-        
-    }
+    public function getProduct();
 }

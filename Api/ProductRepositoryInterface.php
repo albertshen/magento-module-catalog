@@ -7,16 +7,16 @@
 namespace AlbertMage\Catalog\Api;
 
 /**
- * Interface ProductsInterface
+ * Interface ProductRepositoryInterface
  * @api
  * @since 101.0.0
  */
-interface ProductsInterface
+interface ProductRepositoryInterface
 {
     /**
-     * Get products
+     * Get product list
      *
      * @return array
      */
-    public function getProducts();
+    public function getList();
 }

@@ -1,13 +1,19 @@
 <?xml version="1.0" ?>
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
 	<route url="/V1/app/categories" method="GET">
-		<service class="AlbertMage\Catalog\Api\CategoriesInterface" method="getCategories"/>
+		<service class="AlbertMage\Catalog\Api\CategoryRepositoryInterface" method="getCategoryTree"/>
+		<resources>
+			<resource ref="anonymous"/>
+		</resources>
+	</route>
+	<route url="/V1/app/categories/:catId" method="GET">
+		<service class="AlbertMage\Catalog\Api\CategoryRepositoryInterface" method="getCategoryTreeById"/>
 		<resources>
 			<resource ref="anonymous"/>
 		</resources>
 	</route>
 	<route url="/V1/app/products" method="GET">
-		<service class="AlbertMage\Catalog\Api\ProductsInterface" method="getProducts"/>
+		<service class="AlbertMage\Catalog\Api\ProductRepositoryInterface" method="getList"/>
 		<resources>
 			<resource ref="anonymous"/>
 		</resources>
