@@ -15,8 +15,8 @@ interface ProductListInterface
 {
     /**
      * Get product list
-     *
+     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection
      * @return array
      */
-    public function getList($collection);
+    public function getList(\Magento\Catalog\Model\ResourceModel\Product\Collection $collection);
 }
