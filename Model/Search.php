@@ -106,7 +106,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
         $collection = $this->layer->getProductCollection();
 
         $filters = $this->_request->getParams();
-        unset($filters['page'], $filters['pageSize'], $filters['catId'], $filters['sort']);
+        unset($filters['q'], $filters['page'], $filters['pageSize'], $filters['catId'], $filters['sort']);
 
         foreach ($filters as $field => $value) { //and
 
@@ -155,12 +155,13 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     {
         $filters = $this->filterList->getFilters($this->layer);
 
+        $filterArray = [];
+        
         foreach ($filters as $filter) {
             //$availablefilter = $filter->getRequestVar(); //Gives the request param name such as 'cat' for Category, 'price' for Price
             $availablefilter = (string)$filter->getName(); //Gives Display Name of the filter such as Category,Price etc.
             $items = $filter->getItems(); //Gives all available filter options in that particular filter
             $filterValues = [];
-            $filterArray = [];
             foreach($items as $item)
             {
                 $filterValues[] = [
@@ -170,7 +171,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
 
                 ];
             }
-            if(!empty($filterValues) && count($filterValues)>1)
+            if(!empty($filterValues) && count($filterValues)>0)
             {
                 $filterArray[$availablefilter] =  $filterValues;
             }
