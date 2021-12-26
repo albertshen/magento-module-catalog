@@ -131,9 +131,10 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
             $collection->addFieldToFilter($field, $value);
         }
 
-        if ($this->_request->getParam('q')) {
-            $collection->addSearchFilter($this->_request->getParam('q'));
-        }
+        // if ($this->_request->getParam('q')) {
+        //     $collection->addSearchFilter($this->_request->getParam('q'));
+        // }
+        // The query will be duplicated by Magento\CatalogSearch\Model\Layer\Search\Plugin\CollectionFilter afterFilter function
 
         
         $collection->setCurPage($page);
@@ -171,7 +172,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
 
                 ];
             }
-            if(!empty($filterValues) && count($filterValues)>0)
+            if(!empty($filterValues) && count($filterValues) > 0)
             {
                 $filterArray[$availablefilter] =  $filterValues;
             }
