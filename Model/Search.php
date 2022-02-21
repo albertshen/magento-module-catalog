@@ -88,9 +88,6 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
 
     private function getProductList()
     {
-        // $a = ObjectManager::getInstance()->create(\Magento\Integration\Model\Oauth\TokenFactory::class);
-        // $b = $a->create()->createCustomerToken(3)->getToken();
-        // var_dump($b);exit;
         $page = $this->_request->getParam('page') ?? 1;
         $pageSize = $this->_request->getParam('pageSize') ?? 20;
         $catId = $this->_request->getParam('catId');
