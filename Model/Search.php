@@ -7,6 +7,7 @@
 namespace AlbertMage\Catalog\Model;
 
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\DataObject;
 
 /**
  *
@@ -34,21 +35,14 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     protected $filterList;
 
     /**
-     * @var \AlbertMage\Catalog\Model\ProductList
-     */
-    protected $productListProvider;
-
-    /**
      * @param \Magento\Framework\Webapi\Rest\Request
      * @param array
      */
     public function __construct(
-        \Magento\Framework\Webapi\Rest\Request $request,
-        \AlbertMage\Catalog\Model\ProductList $productListProvider
+        \Magento\Framework\Webapi\Rest\Request $request
     )
     {
         $this->_request = $request;
-        $this->productListProvider = $productListProvider;
     }
 
 
@@ -94,7 +88,9 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
 
     private function getProductList()
     {
-
+        // $a = ObjectManager::getInstance()->create(\Magento\Integration\Model\Oauth\TokenFactory::class);
+        // $b = $a->create()->createCustomerToken(3)->getToken();
+        // var_dump($b);exit;
         $page = $this->_request->getParam('page') ?? 1;
         $pageSize = $this->_request->getParam('pageSize') ?? 20;
         $catId = $this->_request->getParam('catId');
@@ -148,8 +144,26 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
         $data['total'] = $collection->getSize();
         $data['pageSize'] = $collection->getPageSize();
         $data['currentPage'] = $collection->getCurPage();
-        $data['items'] = $this->productListProvider->getList($collection);
+        foreach($collection->getItems() as $product) {
+            $data['items'][] = $this->getProductData($product)->getData();
+        }
         return $data;
+    }
+
+    /**
+     * Get product data
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     * @return \Magento\Framework\DataObject
+     */
+    public function getProductData(\Magento\Catalog\Model\Product $product)
+    {
+        $dataObject = new DataObject([
+            'sku' => $product->getSku(),
+            'url' => $product->getProductUrl()
+        ]);
+
+        return $dataObject;
     }
 
     private function getFilterList()

@@ -7,11 +7,11 @@
 namespace AlbertMage\Catalog\Api;
 
 /**
- * Interface CategoryRepositoryInterface
+ * Interface CategoryListInterface
  * @api
  * @since 101.0.0
  */
-interface CategoryRepositoryInterface
+interface CategoryListInterface
 {
     /**
      * Get category tree

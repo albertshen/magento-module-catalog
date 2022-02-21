@@ -6,7 +6,8 @@
 
 namespace AlbertMage\Catalog\Model;
 
-use Magento\Framework\App\ObjectManager;
+use Magento\Framework\DataObject;
+use AlbertMage\Catalog\Api\ProductListInterface;
 
 /**
  *
@@ -15,40 +16,93 @@ class ProductList implements ProductListInterface
 {
 
     /**
-     * @var \AlbertMage\Catalog\Api\ProductInterface
+     * @var \Magento\Framework\Webapi\Rest\Request
      */
-    private $provider;
+    protected $_request;
 
     /**
-     * @param \Magento\Store\Model\StoreManagerInterface
+     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
+     */
+    protected $_productCollectionFactory;
+
+    /**
+     * @param \Magento\Framework\Webapi\Rest\Request
+     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      * @param array
      */
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        array $providers
+        \Magento\Framework\Webapi\Rest\Request $request,
+        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
     )
     {
-        $storeCode = $storeManager->getStore()->getCode();
-
-        if (isset($providers[$storeCode])) {
-            $provider = ObjectManager::getInstance()->get($providers[$storeCode]);
-            if (!$provider instanceof ProductListInterface) {
-                throw new \InvalidArgumentException(
-                    __('provider should be an instance of ProductInterface.')
-                );
-            }
-            $this->provider = $provider;
-        } else {
-            $this->provider = ObjectManager::getInstance()->get($providers['default']);
-        }
-
+        $this->_productCollectionFactory = $productCollectionFactory;
+        $this->_request = $request;
     }
 
     /**
      * @inheritdoc
      */
-    public function getList(\Magento\Catalog\Model\ResourceModel\Product\Collection $collection)
+    public function getList()
     {
-        return $this->provider->getList($collection);
+
+        $data = [];
+
+        $page = $this->_request->getParam('page') ?? 1;
+        $pageSize = $this->_request->getParam('pageSize') ?? 10;
+        $catId = $this->_request->getParam('catId');
+
+        if (!$catId) {
+            return [];
+        }
+
+        $params = $this->_request->getParams();
+        unset($params['page'], $params['pageSize'], $params['catId'], $params['sort']);
+        
+        $collection = $this->_productCollectionFactory->create();
+
+        $collection->setPage($page, $pageSize);
+        $collection->addAttributeToSelect('*');
+        $collection->addCategoriesFilter(['in' => [$catId]]);
+
+        if ($sort = $this->_request->getParam('sort')) {
+            $sort = explode(',', $sort);
+            $collection->addAttributeToSort($sort[0], $sort[1]);
+        }
+        //$collection->addAttributeToFilter('my_attribute_code', array('in' => array(12,10))); selectAttributes
+
+        foreach ($params as $attribute => $value) { //and
+            $arr = explode(',', $value);
+            $arr = array_map(function($val) {
+                return (int) $val;
+            }, $arr);
+            $collection->addAttributeToFilter([
+                ['attribute' => $attribute, 'in' => $arr] //or
+            ]);
+        }
+
+        $data['total'] = $collection->getSize();
+        $data['pageSize'] = $collection->getPageSize();
+        $data['currentPage'] = $collection->getCurPage();
+        foreach($collection->getItems() as $product) {
+            $data['items'][] = $this->getProductData($product)->getData();
+        }
+        
+        return $data;
+    }
+
+    /**
+     * Get product data
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     * @return \Magento\Framework\DataObject
+     */
+    public function getProductData(\Magento\Catalog\Model\Product $product)
+    {
+        $dataObject = new DataObject([
+            'sku' => $product->getSku(),
+            'url' => $product->getProductUrl()
+        ]);
+
+        return $dataObject;
     }
 }

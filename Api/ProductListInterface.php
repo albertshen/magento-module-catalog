@@ -7,11 +7,10 @@
 namespace AlbertMage\Catalog\Api;
 
 /**
- * Interface ProductRepositoryInterface
+ * Interface ProductListInterface
  * @api
- * @since 101.0.0
  */
-interface ProductRepositoryInterface
+interface ProductListInterface
 {
     /**
      * Get list

@@ -6,12 +6,12 @@
 
 namespace AlbertMage\Catalog\Model;
 
-use Magento\Framework\App\ObjectManager;
+use Magento\Framework\DataObject;
 
 /**
  *
  */
-class CategoryRepository implements \AlbertMage\Catalog\Api\CategoryRepositoryInterface
+class CategoryList implements \AlbertMage\Catalog\Api\CategoryListInterface
 {
 
     protected $_categoryCollectionFactory;
@@ -45,8 +45,7 @@ class CategoryRepository implements \AlbertMage\Catalog\Api\CategoryRepositoryIn
     public function getCategoryTree()
     {
         $categories = $this->getCategoryCollection(true, 2, 'position');
-        $categoryProvider = ObjectManager::getInstance()->get(\AlbertMage\Catalog\Model\Category::class);
-        return $categoryProvider->normalizeCategories($categories);
+        return $this->generateCategoryTree($categories);
     }
 
     /**
@@ -54,11 +53,9 @@ class CategoryRepository implements \AlbertMage\Catalog\Api\CategoryRepositoryIn
      */
     public function getCategoryTreeById($catId)
     {
-
         $category = $this->_categoryRepository->get($catId);
         if ($category->hasChildren()) {
-            $categoryProvider = ObjectManager::getInstance()->get(\AlbertMage\Catalog\Model\Category::class);
-            return $categoryProvider->normalizeCategories($category->getChildrenCategories());
+            return $this->generateCategoryTree($category->getChildrenCategories());
         }
     }
 
@@ -100,7 +97,7 @@ class CategoryRepository implements \AlbertMage\Catalog\Api\CategoryRepositoryIn
     }
 
 
-     /**
+    /**
      * Retrieve current store level 2 category
      *
      * @param bool|string $sorted (if true display collection sorted as name otherwise sorted as based on id asc)
@@ -112,4 +109,41 @@ class CategoryRepository implements \AlbertMage\Catalog\Api\CategoryRepositoryIn
         return $this->_categoryHelper->getStoreCategories($sorted = false, $asCollection = false, $toLoad = true);
     }
 
+    /**
+     * Retrieve category tree
+     *
+     * @param \Magento\Catalog\Model\ResourceModel\Category\Collection|\Magento\Catalog\Model\Category[] $categories
+     */
+    private function generateCategoryTree($categories)
+    {
+        $data = [];
+        foreach ($categories as $category) {
+            if ($category->getLevel() > 1) {
+                $item = $this->getCategoryData($category);
+                if ($category->hasChildren()) {
+                    $item->setData('children', $this->generateCategoryTree($category->getChildrenCategories()));
+                }
+                $data[] = $item->getData();
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Get product data
+     *
+     * @param \Magento\Catalog\Model\Category $category
+     * @return \Magento\Framework\DataObject
+     */
+    public function getCategoryData(\Magento\Catalog\Model\Category $category)
+    {
+        $dataObject = new DataObject([
+            'id' => $category->getId(),
+            'name' => $category->getName(),
+            'url' => $category->getUrl(),
+            'imageUrl' => $category->getImageUrl()
+        ]);
+
+        return $dataObject;
+    }
 }
