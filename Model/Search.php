@@ -1,16 +1,14 @@
 <?php
 /**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © PHP Digital, Inc. All rights reserved.
  */
-
 namespace AlbertMage\Catalog\Model;
 
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject;
 
 /**
- *
+ * @author Albert Shen <albertshen1206@gmail.com>
  */
 class Search implements \AlbertMage\Catalog\Api\SearchInterface
 {

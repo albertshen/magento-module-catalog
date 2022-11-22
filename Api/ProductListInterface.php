@@ -1,14 +1,13 @@
 <?php
 /**
- *
  * Copyright © PHP Digital, Inc. All rights reserved.
- * See COPYING.txt for license details.
  */
 namespace AlbertMage\Catalog\Api;
 
 /**
  * Interface ProductListInterface
  * @api
+ * @author Albert Shen <albertshen1206@gmail.com>
  */
 interface ProductListInterface
 {

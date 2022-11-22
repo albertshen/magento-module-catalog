@@ -1,16 +1,14 @@
 <?php
 /**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © PHP Digital, Inc. All rights reserved.
  */
-
 namespace AlbertMage\Catalog\Model;
 
 use Magento\Framework\DataObject;
 use AlbertMage\Catalog\Api\ProductListInterface;
 
 /**
- *
+ * @author Albert Shen <albertshen1206@gmail.com>
  */
 class ProductList implements ProductListInterface
 {
