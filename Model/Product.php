@@ -4,49 +4,100 @@
  */
 namespace AlbertMage\Catalog\Model;
 
-use Magento\Framework\App\ObjectManager;
+use AlbertMage\Catalog\Api\Data\ProductInterface;
+use Magento\Framework\Api\AbstractExtensibleObject;
 
 /**
+ * Product.
+ *
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-class Product implements \AlbertMage\Catalog\Api\ProductInterface
+class Product extends AbstractExtensibleObject implements ProductInterface
 {
 
     /**
-     * @var \AlbertMage\Catalog\Api\ProductInterface
+     * {@inheritdoc}
      */
-    private $provider;
-
-    /**
-     * @param \Magento\Store\Model\StoreManagerInterface
-     * @param array
-     */
-    public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        array $providers
-    )
+    public function setId($productId)
     {
-        $storeCode = $storeManager->getStore()->getCode();
-
-        if (isset($providers[$storeCode])) {
-            $provider = ObjectManager::getInstance()->get($providers[$storeCode]);
-            if (!$provider instanceof \AlbertMage\Catalog\Api\ProductInterface) {
-                throw new \InvalidArgumentException(
-                    __('provider should be an instance of ProductInterface.')
-                );
-            }
-            $this->provider = $provider;
-        } else {
-            $this->provider = ObjectManager::getInstance()->get($providers['default']);
-        }
-
+        return $this->setData(self::KEY_ID, $productId);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getProduct()
+    public function getId()
     {
-        return $this->provider->getProduct();
+        return $this->_get(self::KEY_ID);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPrice()
+    {
+        return $this->_get(self::KEY_PRICE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPrice($price)
+    {
+        return $this->setData(self::KEY_PRICE, $price);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return $this->_get(self::KEY_NAME);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setName($name)
+    {
+        return $this->setData(self::KEY_NAME, $name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getThumbnail()
+    {
+        return $this->_get(self::KEY_THUMBNAIL);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setThumbnail($thumbnail)
+    {
+        return $this->setData(self::KEY_THUMBNAIL, $thumbnail);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductExtensionInterface|null
+     */
+    public function getExtensionAttributes()
+    {
+        return $this->_getExtensionAttributes();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ProductExtensionInterface $extensionAttributes
+     * @return $this
+     */
+    public function setExtensionAttributes(\AlbertMage\Catalog\Api\Data\ProductExtensionInterface $extensionAttributes)
+    {
+        return $this->_setExtensionAttributes($extensionAttributes);
+    }
+
 }
