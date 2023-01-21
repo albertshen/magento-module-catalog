@@ -11,17 +11,11 @@ namespace AlbertMage\Catalog\Api;
  */
 interface SearchInterface
 {
+
     /**
      * Get product list by search
      *
-     * @return array
+     * @return \AlbertMage\Catalog\Api\Data\ProductSearchResultsInterface
      */
     public function search();
-
-    /**
-     * Get product list by category
-     *
-     * @return array
-     */
-    public function category();
 }

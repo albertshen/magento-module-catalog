@@ -33,160 +33,252 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     protected $filterList;
 
     /**
-     * @param \Magento\Framework\Webapi\Rest\Request
-     * @param array
+     * @var \Magento\Catalog\Model\Layer\CategoryFactory
+     */
+    protected $categoryLayerFactory;
+
+    /**
+     * @var \Magento\Catalog\Model\Layer\SearchFactory
+     */
+    protected $searchLayerFactory;
+
+    /**
+     * @var \AlbertMage\Catalog\Api\Data\FilterInterfaceFactory
+     */
+    protected $filterInterfaceFactory;
+
+    /**
+     * @var \AlbertMage\Catalog\Api\Data\FilterItemInterfaceFactory
+     */
+    protected $filterItemInterfaceFactory;
+
+    /**
+     * @var \AlbertMage\Catalog\Api\Data\ProductSearchResultsInterfaceFactory
+     */
+    protected $productSearchResultsFactory;
+
+    /**
+     * @var \AlbertMage\Catalog\Api\ProductManagementInterface
+     */
+    protected $productManagement;
+
+    /**
+     * @var \Magento\Framework\Api\SearchCriteriaFactory
+     */
+    protected $searchCriteriaFactory;
+
+    /**
+     * @var \Magento\Framework\Api\Search\FilterGroupFactory
+     */
+    protected $filterGroupFactory;
+
+    /**
+     * @var \Magento\Framework\Api\FilterFactory
+     */
+    protected $filterFactory;
+
+    /**
+     * @var \Magento\Framework\Api\SortOrderFactory
+     */
+    protected $sortOrderFactory;
+
+    /**
+     * @param \Magento\Framework\Webapi\Rest\Request $request
+     * @param \Magento\Catalog\Model\Layer\CategoryFactory $categoryLayerFactory
+     * @param \Magento\Catalog\Model\Layer\SearchFactory $searchLayerFactory
+     * @param \AlbertMage\Catalog\Api\Data\FilterInterfaceFactory $filterInterfaceFactory
+     * @param \AlbertMage\Catalog\Api\Data\FilterItemInterfaceFactory $filterItemInterfaceFactory,
+     * @param \AlbertMage\Catalog\Api\Data\ProductSearchResultsInterfaceFactory $productSearchResultsFactory
+     * @param \AlbertMage\Catalog\Api\ProductManagementInterface $productManagement
+     * @param \Magento\Framework\Api\SearchCriteriaFactory $searchCriteriaFactory
+     * @param \Magento\Framework\Api\Search\FilterGroupFactory $filterGroupFactory
+     * @param \Magento\Framework\Api\FilterFactory $filterFactory
+     * @param \Magento\Framework\Api\SortOrderFactory $sortOrderFactory
      */
     public function __construct(
-        \Magento\Framework\Webapi\Rest\Request $request
+        \Magento\Framework\Webapi\Rest\Request $request,
+        \Magento\Catalog\Model\Layer\CategoryFactory $categoryLayerFactory,
+        \Magento\Catalog\Model\Layer\SearchFactory $searchLayerFactory,
+        \AlbertMage\Catalog\Api\Data\FilterInterfaceFactory $filterInterfaceFactory,
+        \AlbertMage\Catalog\Api\Data\FilterItemInterfaceFactory $filterItemInterfaceFactory,
+        \AlbertMage\Catalog\Api\Data\ProductSearchResultsInterfaceFactory $productSearchResultsFactory,
+        \AlbertMage\Catalog\Api\ProductManagementInterface $productManagement,
+        \Magento\Framework\Api\SearchCriteriaFactory $searchCriteriaFactory,
+        \Magento\Framework\Api\Search\FilterGroupFactory $filterGroupFactory,
+        \Magento\Framework\Api\FilterFactory $filterFactory,
+        \Magento\Framework\Api\SortOrderFactory $sortOrderFactory
     )
     {
         $this->_request = $request;
+        $this->categoryLayerFactory = $categoryLayerFactory;
+        $this->searchLayerFactory = $searchLayerFactory;
+        $this->filterInterfaceFactory = $filterInterfaceFactory;
+        $this->filterItemInterfaceFactory = $filterItemInterfaceFactory;
+        $this->productSearchResultsFactory = $productSearchResultsFactory;
+        $this->productManagement = $productManagement;
+        $this->searchCriteriaFactory = $searchCriteriaFactory;
+        $this->filterGroupFactory = $filterGroupFactory;
+        $this->filterFactory = $filterFactory;
+        $this->sortOrderFactory = $sortOrderFactory;
     }
 
-
-    public function category()
-    {
-        $this->setLayer(ObjectManager::getInstance()->create(\Magento\Catalog\Model\Layer\Category::class));
-
-        $data = $this->getProductList();
-        if (self::CATEGORY_FILTER) {
-            $this->setFilterList(ObjectManager::getInstance()->create(\categoryFilterList::class));
-            $data['filter'] = $this->getFilterList();
-        }
-        return $data;
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function search()
     {
-        $this->setLayer(ObjectManager::getInstance()->create(\Magento\Catalog\Model\Layer\Search::class));
 
-        $data = $this->getProductList();
-        if (self::SEARCH_FILTER) {
-            $this->setFilterList(ObjectManager::getInstance()->create(\searchFilterList::class));
-            $data['filter'] = $this->getFilterList();
-        }
-        return $data;
-    }
-
-    /**
-     * @param \Magento\Catalog\Model\Layer
-     */
-    private function setLayer($layer)
-    {
-        $this->layer = $layer;
-    }
-
-    /**
-     * @param \Magento\Catalog\Model\Layer\FilterList
-     */
-    private function setFilterList($filterList)
-    {
-        $this->filterList = $filterList;
-    }
-
-    private function getProductList()
-    {
         $page = $this->_request->getParam('page') ?? 1;
         $pageSize = $this->_request->getParam('pageSize') ?? 20;
         $catId = $this->_request->getParam('catId');
 
+        $filterParams = $this->_request->getParams();
+        unset($filterParams['page'], $filterParams['pageSize'], $filterParams['catId'], $filterParams['sort']);
+
         if ($catId) {
-            $this->layer->setCurrentCategory($catId);
+            $layer = $this->categoryLayerFactory->create();
+            $layer->setCurrentCategory($catId);
+            $filterList = ObjectManager::getInstance()->create(\categoryFilterList::class);
+        } else {
+            $layer = $this->searchLayerFactory->create();
+            $filterList = ObjectManager::getInstance()->create(\searchFilterList::class);
         }
 
-        $collection = $this->layer->getProductCollection();
+        $collection = $layer->getProductCollection();
 
-        $filters = $this->_request->getParams();
-        unset($filters['q'], $filters['page'], $filters['pageSize'], $filters['catId'], $filters['sort']);
+        $productSearchResults = $this->productSearchResultsFactory->create();
+        $searchCriteria = $this->searchCriteriaFactory->create();
 
-        foreach ($filters as $field => $value) { //and
-
-            $arr = explode(',', $value);
-            $value = array_map(function($val) {
-                return (int) $val;
-            }, $arr);
-
-            if (count($value) == 1) {
-                $value = $value[0];
-            }
-
-            if ($field === 'cat') {
-                $field = 'category_ids';
-            }
-
+        $filterGroups = [];
+        foreach ($filterParams as $field => $value) { 
+            // category_ids
+            //and relation between different field. For instance: material=1&activity=2 (and)
+            //or relation for field array value. For instance: activity=2,3 (or)
+            $filters = [];
             if ($field === 'price') {
                 $arr = explode('-', $value);
                 $value = ['from' => (int) $arr[0] , 'to' => (int) $arr[1]];
+                $collection->addFieldToFilter($field, $value);
+                foreach($value as $k => $v) {
+                    $filters[] = $this->createFilter($field.'.'.$k, $v);
+                }
+            } elseif ($field == 'q') {
+                $filters[] = $this->createFilter($field, $value);
+            } else {
+                $arr = explode(',', $value);
+                foreach($arr as $item) {
+                    $collection->addFieldToFilter($field, $item);
+                    $filters[] = $this->createFilter($field, $item);
+                }
             }
 
-            $collection->addFieldToFilter($field, $value);
+            $filterGroup = $this->filterGroupFactory->create();
+            $filterGroup->setFilters($filters);
+            $filterGroups[] = $filterGroup;
+            
         }
 
-        // if ($this->_request->getParam('q')) {
-        //     $collection->addSearchFilter($this->_request->getParam('q'));
-        // }
-        // The query will be duplicated by Magento\CatalogSearch\Model\Layer\Search\Plugin\CollectionFilter afterFilter function
-
-        
         $collection->setCurPage($page);
         $collection->setPageSize($pageSize);
 
+        $sortOrders = [];
         if ($sort = $this->_request->getParam('sort')) {
             $sort = explode(',', $sort);
             $collection->setOrder($sort[0], $sort[1]);
+
+            $sortOrder = $this->sortOrderFactory->create();
+            $sortOrder->setField($sort[0]);
+            $sortOrder->setDirection($sort[1]);
+            $sortOrders[] = $sortOrder;
+            $searchCriteria->setSortOrders($sortOrders);
         }
 
-        $data['total'] = $collection->getSize();
-        $data['pageSize'] = $collection->getPageSize();
-        $data['currentPage'] = $collection->getCurPage();
-        foreach($collection->getItems() as $product) {
-            $data['items'][] = $this->getProductData($product)->getData();
+
+        $filters = $filterList->getFilters($layer);
+
+        $filterList = $this->createFilterList($filters);
+
+        $products = $collection->getItems();
+
+
+        $searchCriteria->setFilterGroups($filterGroups);
+        $searchCriteria->setPageSize($collection->getPageSize());
+        $searchCriteria->setCurrentPage($collection->getCurPage());
+
+        
+        $newProducts = [];
+        foreach($products as $product) {
+            $newProducts[] = $this->getProductData($product);
         }
-        return $data;
+
+        $productSearchResults->setItems($newProducts);
+        $productSearchResults->setSearchCriteria($searchCriteria);
+        $productSearchResults->setTotalCount($collection->getSize());
+        $productSearchResults->setFilterOptions($filterList);
+
+        return $productSearchResults;
     }
 
     /**
      * Get product data
      *
      * @param \Magento\Catalog\Model\Product $product
-     * @return \Magento\Framework\DataObject
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface
      */
     public function getProductData(\Magento\Catalog\Model\Product $product)
     {
-        $dataObject = new DataObject([
-            'sku' => $product->getSku(),
-            'url' => $product->getProductUrl()
-        ]);
-
-        return $dataObject;
+        return $this->productManagement->createProduct($product);
     }
 
-    private function getFilterList()
+    /**
+     * Returns filter list.
+     *
+     * @param \Filter\AbstractFilter[] $filters
+     * @return \AlbertMage\Catalog\Api\Data\FilterInterface[].
+     */
+    private function createFilterList($filters)
     {
-        $filters = $this->filterList->getFilters($this->layer);
 
-        $filterArray = [];
+        $newFilters = [];
         
         foreach ($filters as $filter) {
-            //$availablefilter = $filter->getRequestVar(); //Gives the request param name such as 'cat' for Category, 'price' for Price
-            $availablefilter = (string)$filter->getName(); //Gives Display Name of the filter such as Category,Price etc.
+            $newFilter = $this->filterInterfaceFactory->create();
+            //Gives the request param name such as 'cat' for Category, 'price' for Price
+            $newFilter->setField($filter->getRequestVar());
+            $newFilter->setLabel($filter->getName());
             $items = $filter->getItems(); //Gives all available filter options in that particular filter
-            $filterValues = [];
+            $filterItems = [];
             foreach($items as $item)
             {
-                $filterValues[] = [
-                    'display' => strip_tags($item->getLabel()),
-                    'value' => $item->getValue(),
-                    'count' => $item->getCount()
-
-                ];
+                $filterItem = $this->filterItemInterfaceFactory->create();
+                $filterItem->setDisplay(strip_tags($item->getLabel()));
+                $filterItem->setValue($item->getValue());
+                $filterItem->setCount($item->getCount());
+                $filterItems[] = $filterItem;
             }
-            if(!empty($filterValues) && count($filterValues) > 0)
+            if(count($filterItems) > 0)
             {
-                $filterArray[$availablefilter] =  $filterValues;
+                $newFilter->setItems($filterItems);
+                $newFilters[] = $newFilter;
             }
         }
-        return $filterArray;
+
+        return $newFilters;
     }
+
+    /**
+     * Create filter.
+     *
+     * @param \Filter\AbstractFilter[] $filters
+     * @return \AlbertMage\Catalog\Api\Data\FilterInterface.
+     */
+    private function createFilter($field, $value)
+    {
+        $filter = $this->filterFactory->create();
+        $filter->setField($field);
+        $filter->setValue($value);
+        return $filter;
+    }
+    
 
 }

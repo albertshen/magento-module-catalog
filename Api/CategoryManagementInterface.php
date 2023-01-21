@@ -9,19 +9,20 @@ namespace AlbertMage\Catalog\Api;
  * @api
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-interface CategoryListInterface
+interface CategoryManagementInterface
 {
     /**
      * Get category tree
      *
-     * @return array
+     * @return \AlbertMage\Catalog\Api\Data\CategoryInterface[]
      */
     public function getCategoryTree();
 
     /**
      * Get category tree by id
+     * 
      * @param int $catId
-     * @return array
+     * @return \AlbertMage\Catalog\Api\Data\CategoryInterface[]
      */
-    public function getCategoryTreeById($catId);
+    public function getChildrenCategoriesById($catId);
 }
