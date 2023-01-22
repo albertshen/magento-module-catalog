@@ -63,4 +63,20 @@ class FilterItem extends AbstractModel implements FilterItemInterface
         return $this->setData(self::KEY_COUNT, $count);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getIsSelected()
+    {
+        return $this->getData(self::KEY_IS_SELECTED);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setIsSelected($isSelected)
+    {
+        return $this->setData(self::KEY_IS_SELECTED, $isSelected);
+    }
+
 }

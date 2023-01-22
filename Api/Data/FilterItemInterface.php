@@ -17,6 +17,8 @@ interface FilterItemInterface
 
     const KEY_COUNT = 'count';
 
+    const KEY_IS_SELECTED = 'is_selected';
+
     /**
      * Returns display.
      *
@@ -61,5 +63,20 @@ interface FilterItemInterface
      * @return $this
      */
     public function setCount($count);
+
+    /**
+     * Returns is selected.
+     *
+     * @return bool|null
+     */
+    public function getIsSelected();
+
+    /**
+     * Sets the is selected.
+     *
+     * @param bool $isSelected
+     * @return $this
+     */
+    public function setIsSelected($isSelected);
     
 }

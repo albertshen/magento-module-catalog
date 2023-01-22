@@ -5,17 +5,12 @@
 namespace AlbertMage\Catalog\Model;
 
 use Magento\Framework\App\ObjectManager;
-use Magento\Framework\DataObject;
 
 /**
  * @author Albert Shen <albertshen1206@gmail.com>
  */
 class Search implements \AlbertMage\Catalog\Api\SearchInterface
 {
-
-    const CATEGORY_FILTER = true;
-
-    const SEARCH_FILTER = true;
 
     /**
      * @var \Magento\Framework\Webapi\Rest\Request
@@ -128,6 +123,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     public function search()
     {
 
+        // Prepare params
         $page = $this->_request->getParam('page') ?? 1;
         $pageSize = $this->_request->getParam('pageSize') ?? 20;
         $catId = $this->_request->getParam('catId');
@@ -135,6 +131,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
         $filterParams = $this->_request->getParams();
         unset($filterParams['page'], $filterParams['pageSize'], $filterParams['catId'], $filterParams['sort']);
 
+        // Set category or search mode
         if ($catId) {
             $layer = $this->categoryLayerFactory->create();
             $layer->setCurrentCategory($catId);
@@ -144,25 +141,25 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
             $filterList = ObjectManager::getInstance()->create(\searchFilterList::class);
         }
 
+        // Set page and page size
         $collection = $layer->getProductCollection();
+        $collection->setCurPage($page);
+        $collection->setPageSize($pageSize);
 
-        $productSearchResults = $this->productSearchResultsFactory->create();
-        $searchCriteria = $this->searchCriteriaFactory->create();
-
+        // Create filter group in results
         $filterGroups = [];
         foreach ($filterParams as $field => $value) { 
             // category_ids
-            //and relation between different field. For instance: material=1&activity=2 (and)
-            //or relation for field array value. For instance: activity=2,3 (or)
+            // and relation between different field. For instance: material=1&activity=2 (and)
+            // or relation for field array value. For instance: activity=2,3 (or)
             $filters = [];
-            if ($field === 'price') {
-                $arr = explode('-', $value);
-                $value = ['from' => (int) $arr[0] , 'to' => (int) $arr[1]];
-                $collection->addFieldToFilter($field, $value);
-                foreach($value as $k => $v) {
-                    $filters[] = $this->createFilter($field.'.'.$k, $v);
-                }
-            } elseif ($field == 'q') {
+
+            if ($field == 'q') {
+                $filters[] = $this->createFilter($field, $value);
+            } elseif (count($arr = explode('-', $value)) > 1) {
+                $arr = ['from' => (int) $arr[0] , 'to' => (int) $arr[1]];
+                $collection->addFieldToFilter($field, $arr);
+                // no need to add the filter into results because only the next layer will show for price. For instance, price=0-10 -> 1-6, 7-10
                 $filters[] = $this->createFilter($field, $value);
             } else {
                 $arr = explode(',', $value);
@@ -172,20 +169,20 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
                 }
             }
 
+
             $filterGroup = $this->filterGroupFactory->create();
             $filterGroup->setFilters($filters);
             $filterGroups[] = $filterGroup;
             
         }
 
-        $collection->setCurPage($page);
-        $collection->setPageSize($pageSize);
+        $searchCriteria = $this->searchCriteriaFactory->create();
 
+        // Set sort order
         $sortOrders = [];
         if ($sort = $this->_request->getParam('sort')) {
             $sort = explode(',', $sort);
             $collection->setOrder($sort[0], $sort[1]);
-
             $sortOrder = $this->sortOrderFactory->create();
             $sortOrder->setField($sort[0]);
             $sortOrder->setDirection($sort[1]);
@@ -193,28 +190,31 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
             $searchCriteria->setSortOrders($sortOrders);
         }
 
-
-        $filters = $filterList->getFilters($layer);
-
-        $filterList = $this->createFilterList($filters);
-
-        $products = $collection->getItems();
-
-
+        // Set search criteria
         $searchCriteria->setFilterGroups($filterGroups);
         $searchCriteria->setPageSize($collection->getPageSize());
         $searchCriteria->setCurrentPage($collection->getCurPage());
 
-        
+        // Prepare products
+        $products = $collection->getItems();
         $newProducts = [];
         foreach($products as $product) {
             $newProducts[] = $this->getProductData($product);
         }
 
+        // Prepare $filterOptions in results
+        $filters = $filterList->getFilters($layer);
+        $filterOptions = $this->createFilterList($filters);
+
+        // Add is selected status
+        $this->attachIsSelectedToFilters($filterOptions, $filterGroups);
+
+        // Set productSearchResults
+        $productSearchResults = $this->productSearchResultsFactory->create();
         $productSearchResults->setItems($newProducts);
         $productSearchResults->setSearchCriteria($searchCriteria);
         $productSearchResults->setTotalCount($collection->getSize());
-        $productSearchResults->setFilterOptions($filterList);
+        $productSearchResults->setFilterOptions($filterOptions);
 
         return $productSearchResults;
     }
@@ -269,7 +269,8 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     /**
      * Create filter.
      *
-     * @param \Filter\AbstractFilter[] $filters
+     * @param string $field
+     * @param mixed $value
      * @return \AlbertMage\Catalog\Api\Data\FilterInterface.
      */
     private function createFilter($field, $value)
@@ -280,5 +281,40 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
         return $filter;
     }
     
+    /**
+     * Attach is Selected.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\FilterInterface[] $filterOptions
+     * @param \Magento\Framework\Api\Search\FilterGroup[] $filterGroups
+     * @return $this
+     */
+    private function attachIsSelectedToFilters($filterOptions, $filterGroups)
+    {
+        foreach($filterOptions as $filter) {
+            foreach($filter->getItems() as $item) {
+                $item->setIsSelected($this->getIsSelected($filterGroups, $filter->getField(), $item->getValue()));
+            }
+        }
+    }
+
+    /**
+     * Get is selected status.
+     *
+     * @param \Magento\Framework\Api\Search\FilterGroup[] $filterGroups
+     * @return string $field
+     * @return mixed $value
+     * @return bool
+     */
+    private function getIsSelected($filterGroups, $field, $value)
+    {
+        foreach($filterGroups as $filterGroup) {
+            foreach($filterGroup->getFilters() as $filter) {
+                if ($filter->getField() == $field && $filter->getValue() == $value) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 }
