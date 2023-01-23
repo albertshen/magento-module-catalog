@@ -4,7 +4,7 @@
  */
 namespace AlbertMage\Catalog\Model;
 
-use AlbertMage\Catalog\Api\Data\ProductInterface;
+use AlbertMage\Catalog\Api\Data\ProductListItemInterface;
 use Magento\Framework\Api\AbstractExtensibleObject;
 
 /**
@@ -12,7 +12,7 @@ use Magento\Framework\Api\AbstractExtensibleObject;
  *
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-class Product extends AbstractExtensibleObject implements ProductInterface
+class ProductListItem extends AbstractExtensibleObject implements ProductListItemInterface
 {
 
     /**
@@ -82,7 +82,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     /**
      * {@inheritdoc}
      *
-     * @return \AlbertMage\Catalog\Api\Data\ProductExtensionInterface|null
+     * @return \AlbertMage\Catalog\Api\Data\ProductListItemExtensionInterface|null
      */
     public function getExtensionAttributes()
     {
@@ -92,10 +92,10 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     /**
      * {@inheritdoc}
      *
-     * @param \AlbertMage\Catalog\Api\Data\ProductExtensionInterface $extensionAttributes
+     * @param \AlbertMage\Catalog\Api\Data\ProductListItemExtensionInterface $extensionAttributes
      * @return $this
      */
-    public function setExtensionAttributes(\AlbertMage\Catalog\Api\Data\ProductExtensionInterface $extensionAttributes)
+    public function setExtensionAttributes(\AlbertMage\Catalog\Api\Data\ProductListItemExtensionInterface $extensionAttributes)
     {
         return $this->_setExtensionAttributes($extensionAttributes);
     }

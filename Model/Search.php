@@ -155,6 +155,10 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
             $filters = [];
 
             if ($field == 'q') {
+                // if ($this->_request->getParam('q')) {
+                //     $collection->addSearchFilter($this->_request->getParam('q'));
+                // }
+                // The query will be duplicated by Magento\CatalogSearch\Model\Layer\Search\Plugin\CollectionFilter afterFilter function
                 $filters[] = $this->createFilter($field, $value);
             } elseif (count($arr = explode('-', $value)) > 1) {
                 $arr = ['from' => (int) $arr[0] , 'to' => (int) $arr[1]];
@@ -199,7 +203,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
         $products = $collection->getItems();
         $newProducts = [];
         foreach($products as $product) {
-            $newProducts[] = $this->getProductData($product);
+            $newProducts[] = $this->getProductListItem($product);
         }
 
         // Prepare $filterOptions in results
@@ -223,11 +227,11 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
      * Get product data
      *
      * @param \Magento\Catalog\Model\Product $product
-     * @return \AlbertMage\Catalog\Api\Data\ProductInterface
+     * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface
      */
-    public function getProductData(\Magento\Catalog\Model\Product $product)
+    public function getProductListItem(\Magento\Catalog\Model\Product $product)
     {
-        return $this->productManagement->createProduct($product);
+        return $this->productManagement->createProductListItem($product);
     }
 
     /**

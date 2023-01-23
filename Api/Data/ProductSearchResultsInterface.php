@@ -17,14 +17,14 @@ interface ProductSearchResultsInterface extends \Magento\Framework\Api\SearchRes
     /**
      * Get product list.
      *
-     * @return \AlbertMage\Catalog\Api\Data\ProductInterface[]
+     * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface[]
      */
     public function getItems();
 
     /**
      * Set product list.
      *
-     * @param \AlbertMage\Catalog\Api\Data\ProductInterface[] $items
+     * @param \AlbertMage\Catalog\Api\Data\ProductListItemInterface[] $items
      * @return $this
      */
     public function setItems(array $items);

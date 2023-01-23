@@ -15,11 +15,9 @@ interface ProductInterface extends \Magento\Framework\Api\ExtensibleDataInterfac
 
     const KEY_PRICE = 'price';
 
-    const KEY_QTY = 'qty';
-
     const KEY_NAME = 'name';
 
-    const KEY_THUMBNAIL = 'thumbnail';
+    const KEY_SKU = 'sku';
 
     /**
      * Set product id
@@ -67,19 +65,72 @@ interface ProductInterface extends \Magento\Framework\Api\ExtensibleDataInterfac
     public function setName($name);
 
     /**
-     * Returns the product thumbnail.
+     * Returns the product sku.
      *
-     * @return string Product thumbnail.
+     * @return string Product sku.
      */
-    public function getThumbnail();
+    public function getSku();
 
     /**
-     * Sets the product thumbnail.
+     * Sets the product sku.
      *
-     * @param string $thumbnail
+     * @param string $sku
      * @return $this
      */
-    public function setThumbnail($thumbnail);
+    public function setSku($sku);
+
+    /**
+     * Sets the product name.
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function setName($name);
+
+    /**
+     * Returns the product sku.
+     *
+     * @return string Product sku.
+     */
+    public function getSku();
+
+    /**
+     * Sets the product sku.
+     *
+     * @param string $sku
+     * @return $this
+     */
+    public function setSku($sku);
+
+    /**
+     * Returns the product mediaGallery.
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductMediaGalleryItemInterface[].
+     */
+    public function getMediaGallery();
+
+    /**
+     * Sets the product mediaGallery.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ProductMediaGalleryItemInterface[] $mediaGallery
+     * @return $this
+     */
+    public function setMediaGallery($mediaGallery);
+
+    /**
+     * Returns the childrenProducts.
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface[].
+     */
+    public function getChildrenProducts();
+
+    /**
+     * Sets the childrenProducts.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ProductInterface[] $childrenProducts
+     * @return $this
+     */
+    public function setChildrenProducts($childrenProducts);
 
     /**
      * Retrieve existing extension attributes object or create a new one.

@@ -5,7 +5,7 @@
 namespace AlbertMage\Catalog\Model;
 
 use Magento\Catalog\Model\ProductFactory;
-use AlbertMage\Catalog\Api\Data\ProductInterfaceFactory;
+use AlbertMage\Catalog\Api\Data\ProductListItemInterfaceFactory;
 use AlbertMage\Catalog\Api\ProductManagementInterface;
 
 /**
@@ -20,39 +20,39 @@ class ProductManagement implements ProductManagementInterface
     protected $productFactory;
 
     /**
-     * @var ProductInterfaceFactory
+     * @var ProductListItemInterfaceFactory
      */
-    protected $productInterfaceFactory;
+    protected $productListItemInterfaceFactory;
 
 
     /**
      * @param ProductFactory $productFactory
-     * @param ProductInterfaceFactory $productInterfaceFactory
+     * @param ProductListItemInterfaceFactory $productListItemInterfaceFactory
      */
     public function __construct(
         ProductFactory $productFactory,
-        ProductInterfaceFactory $productInterfaceFactory
+        ProductListItemInterfaceFactory $productListItemInterfaceFactory
     )
     {
         $this->productFactory = $productFactory;
-        $this->productInterfaceFactory = $productInterfaceFactory;
+        $this->productListItemInterfaceFactory = $productListItemInterfaceFactory;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createProductById($productId)
+    public function createProductListItemById($productId)
     {
         $product = $this->productFactory->create()->load($productId);
-        return $this->createProduct($product);
+        return $this->createProductListItem($product);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createProduct(\Magento\Catalog\Model\Product $product)
+    public function createProductListItem(\Magento\Catalog\Model\Product $product)
     {
-        $newProduct = $this->productInterfaceFactory->create();
+        $newProduct = $this->productListItemInterfaceFactory->create();
         $newProduct->setId($product->getId());
         $newProduct->setName($product->getName());
         $newProduct->setThumbnail($product->getMediaConfig()->getBaseMediaUrl() . $product->getThumbnail());
