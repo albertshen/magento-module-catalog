@@ -12,6 +12,12 @@
 			<resource ref="anonymous"/>
 		</resources>
 	</route>
+	<route url="/V1/app/products/:productId" method="GET">
+		<service class="AlbertMage\Catalog\Api\ProductManagementInterface" method="getProduct"/>
+		<resources>
+			<resource ref="anonymous"/>
+		</resources>
+	</route>
 	<route url="/V1/app/products/search" method="GET">
 		<service class="AlbertMage\Catalog\Api\SearchInterface" method="search"/>
 		<resources>

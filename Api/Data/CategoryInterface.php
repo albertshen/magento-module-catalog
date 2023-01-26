@@ -4,11 +4,13 @@
  */
 namespace AlbertMage\Catalog\Api\Data;
 
+use Magento\Framework\Api\ExtensibleDataInterface;
+
 /**
  * Interface Category
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-interface CategoryInterface extends \Magento\Framework\Api\ExtensibleDataInterface
+interface CategoryInterface extends ExtensibleDataInterface
 {
 
     const KEY_ID = 'id';

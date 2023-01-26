@@ -1,5 +1,10 @@
 <?xml version="1.0" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="AlbertMage\Catalog\Api\Data\ProductInterface" type="AlbertMage\Catalog\Model\Product"/>
+    <preference for="AlbertMage\Catalog\Api\Data\ProductColorInterface" type="AlbertMage\Catalog\Model\Product\Color"/>
+    <preference for="AlbertMage\Catalog\Api\Data\ProductSizeInterface" type="AlbertMage\Catalog\Model\Product\Size"/>
+    <preference for="AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface" type="AlbertMage\Catalog\Model\ConfigurableProduct\Attribute"/>
+    <preference for="AlbertMage\Catalog\Api\Data\ConfigurableOptionValueInterface" type="AlbertMage\Catalog\Model\ConfigurableProduct\OptionValue"/>
     <preference for="AlbertMage\Catalog\Api\Data\ProductListItemInterface" type="AlbertMage\Catalog\Model\ProductListItem"/>
     <preference for="AlbertMage\Catalog\Api\Data\CategoryInterface" type="AlbertMage\Catalog\Model\Category"/>
     <preference for="AlbertMage\Catalog\Api\Data\FilterInterface" type="AlbertMage\Catalog\Model\Filter"/>

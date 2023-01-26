@@ -4,11 +4,13 @@
  */
 namespace AlbertMage\Catalog\Api\Data;
 
+use Magento\Framework\Api\ExtensibleDataInterface;
+
 /**
  * Interface ProductListItem
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-interface ProductListItemInterface extends \Magento\Framework\Api\ExtensibleDataInterface
+interface ProductListItemInterface extends ExtensibleDataInterface
 {
 
     const KEY_ID = 'id';

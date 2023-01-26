@@ -4,16 +4,27 @@
  */
 namespace AlbertMage\Catalog\Api\Data;
 
+use Magento\Framework\Api\ExtensibleDataInterface;
+
 /**
  * Interface ProductMediaGallery
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-interface ProductMediaGalleryItemInterface
+interface ProductMediaGalleryInterface extends ExtensibleDataInterface
 {
 
-    const KEY_TYPE = 'type';
+    const MEDIA_TYPE = 'media_type';
 
-    const KEY_SRC = 'src';
+    const IMAGE_URL = 'image_url';
+
+    const VIDEO_PROVIDER = 'video_provider';
+
+    const VIDEO_URL = 'video_provider';
+
+    const VIDEO_TITLE = 'video_title';
+
+    const VIDEO_DESCRIPTION = 'video_description';
+
 
     /**
      * Get media type

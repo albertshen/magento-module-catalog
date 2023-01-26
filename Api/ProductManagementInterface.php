@@ -16,6 +16,14 @@ interface ProductManagementInterface
      * Create product by id
      * 
      * @param int $productId
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface
+     */
+    public function getProduct($productId);
+
+    /**
+     * Create product by id
+     * 
+     * @param int $productId
      * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface
      */
     public function createProductListItemById($productId);

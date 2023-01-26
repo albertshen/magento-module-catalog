@@ -4,12 +4,14 @@
  */
 namespace AlbertMage\Catalog\Api\Data;
 
+use Magento\Framework\Api\SearchResultsInterface;
+
 /**
  * Interface for node search results.
  * @api
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-interface ProductSearchResultsInterface extends \Magento\Framework\Api\SearchResultsInterface
+interface ProductSearchResultsInterface extends SearchResultsInterface
 {
 
     const KEY_FILTER_OPTIONS = 'filter_options';

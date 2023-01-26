@@ -4,28 +4,42 @@
  */
 namespace AlbertMage\Catalog\Api\Data;
 
+use Magento\Framework\Api\ExtensibleDataInterface;
+
 /**
  * Interface Product
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-interface ProductInterface extends \Magento\Framework\Api\ExtensibleDataInterface
+interface ProductInterface extends ExtensibleDataInterface
 {
 
-    const KEY_ID = 'id';
+    const ID = 'id';
 
-    const KEY_PRICE = 'price';
+    const NAME = 'name';
 
-    const KEY_NAME = 'name';
+    const PRICE = 'price';
 
-    const KEY_SKU = 'sku';
+    const SPECIAL_PRICE = 'special_price';
 
-    /**
-     * Set product id
-     *
-     * @param int $productId
-     * @return $this
-     */
-    public function setId($productId);
+    const SKU = 'sku';
+
+    const PRE_ORDER_NOTE = 'pre_order_note';
+
+    const COLOR = 'color';
+
+    const SIZE = 'size';
+
+    const DESCRIPTION = 'description';
+
+    const MEDIA_GALLERY = 'media_gallery';
+
+    const STOCK = 'stock';
+
+    const AVAILABLE = 'available';
+
+    const ATTRIBUTES = 'attributes';
+
+    const SUB_PRODUCTS = 'sub_products';
 
     /**
      * Get product id
@@ -35,19 +49,12 @@ interface ProductInterface extends \Magento\Framework\Api\ExtensibleDataInterfac
     public function getId();
 
     /**
-     * Returns the product.
+     * Set product id
      *
-     * @return float product price.
-     */
-    public function getPrice();
-
-    /**
-     * Sets the product price.
-     *
-     * @param float $price
+     * @param int $productId
      * @return $this
      */
-    public function setPrice($price);
+    public function setId($productId);
 
     /**
      * Returns the product name.
@@ -65,6 +72,36 @@ interface ProductInterface extends \Magento\Framework\Api\ExtensibleDataInterfac
     public function setName($name);
 
     /**
+     * Returns the product price.
+     *
+     * @return float product price.
+     */
+    public function getPrice();
+
+    /**
+     * Sets the product price.
+     *
+     * @param float $price
+     * @return $this
+     */
+    public function setPrice($price);
+
+    /**
+     * Returns the product special price.
+     *
+     * @return float product special price.
+     */
+    public function getSpecialPrice();
+
+    /**
+     * Sets the product special price.
+     *
+     * @param float $specialPrice
+     * @return $this
+     */
+    public function setSpecialPrice($specialPrice);
+
+    /**
      * Returns the product sku.
      *
      * @return string Product sku.
@@ -80,27 +117,64 @@ interface ProductInterface extends \Magento\Framework\Api\ExtensibleDataInterfac
     public function setSku($sku);
 
     /**
-     * Sets the product name.
+     * Returns the product preorder note.
      *
-     * @param string $name
-     * @return $this
+     * @return string Product preorder note.
      */
-    public function setName($name);
+    public function getPreOrderNote();
 
     /**
-     * Returns the product sku.
+     * Sets the product preorder note.
      *
-     * @return string Product sku.
-     */
-    public function getSku();
-
-    /**
-     * Sets the product sku.
-     *
-     * @param string $sku
+     * @param string $preOrderNote
      * @return $this
      */
-    public function setSku($sku);
+    public function setPreOrderNote($preOrderNote);
+
+    /**
+     * Returns the product color.
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductColorInterface|null
+     */
+    public function getColor();
+
+    /**
+     * Sets the product size.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ProductColorInterface $color
+     * @return $this
+     */
+    public function setColor(\AlbertMage\Catalog\Api\Data\ProductColorInterface $color);
+
+    /**
+     * Returns the product size.
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductSizeInterface|null
+     */
+    public function getSize();
+
+    /**
+     * Sets the product size.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ProductSizeInterface $size
+     * @return $this
+     */
+    public function setSize(\AlbertMage\Catalog\Api\Data\ProductSizeInterface $size);
+
+    /**
+     * Returns the product description.
+     *
+     * @return string Product description.
+     */
+    public function getDescription();
+
+    /**
+     * Sets the product description.
+     *
+     * @param string $description
+     * @return $this
+     */
+    public function setDescription($description);
 
     /**
      * Returns the product mediaGallery.
@@ -115,22 +189,67 @@ interface ProductInterface extends \Magento\Framework\Api\ExtensibleDataInterfac
      * @param \AlbertMage\Catalog\Api\Data\ProductMediaGalleryItemInterface[] $mediaGallery
      * @return $this
      */
-    public function setMediaGallery($mediaGallery);
+    public function setMediaGallery(array $mediaGallery);
 
     /**
-     * Returns the childrenProducts.
+     * Returns the product stock.
      *
-     * @return \AlbertMage\Catalog\Api\Data\ProductInterface[].
+     * @return int Product stock.
      */
-    public function getChildrenProducts();
+    public function getStock();
 
     /**
-     * Sets the childrenProducts.
+     * Sets the product stock.
      *
-     * @param \AlbertMage\Catalog\Api\Data\ProductInterface[] $childrenProducts
+     * @param int $stock
      * @return $this
      */
-    public function setChildrenProducts($childrenProducts);
+    public function setStock($stock);
+
+    /**
+     * Returns the product available.
+     *
+     * @return bool Product available.
+     */
+    public function getAvailable();
+
+    /**
+     * Sets the product available.
+     *
+     * @param bool $available
+     * @return $this
+     */
+    public function setAvailable($available);
+
+    /**
+     * Returns the product attributes.
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface[]|null
+     */
+    public function getAttributes();
+
+    /**
+     * Sets the product attributes.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface[] $attributes
+     * @return $this
+     */
+    public function setAttributes(array $attributes);
+
+    /**
+     * Returns the sub-products.
+     *
+     * @return \Magento\Catalog\Api\Data\ProductInterface[] Product subProducts.
+     */
+    public function getSubProducts();
+
+    /**
+     * Sets the sub-products.
+     *
+     * @param \Magento\Catalog\Api\Data\ProductInterface[]|null $subProducts
+     * @return $this
+     */
+    public function setSubProducts($subProducts);
 
     /**
      * Retrieve existing extension attributes object or create a new one.
