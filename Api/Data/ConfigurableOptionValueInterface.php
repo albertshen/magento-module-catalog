@@ -58,7 +58,7 @@ interface ConfigurableOptionValueInterface extends \Magento\Framework\Api\Extens
     /**
      * Get swatch image
      *
-     * @return string
+     * @return string|null
      */
     public function getSwatchImage();
 

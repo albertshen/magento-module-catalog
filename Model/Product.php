@@ -14,9 +14,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
 {
 
     /**
-     * Get product id
-     *
-     * @return int product id
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -24,10 +22,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Set product id
-     *
-     * @param int $productId
-     * @return $this
+     * {@inheritdoc}
      */
     public function setId($productId)
     {
@@ -35,9 +30,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product name.
-     *
-     * @return string|null Product name. Otherwise, null.
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -45,10 +38,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product name.
-     *
-     * @param string $name
-     * @return $this
+     * {@inheritdoc}
      */
     public function setName($name)
     {
@@ -56,9 +46,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product price.
-     *
-     * @return float product price.
+     * {@inheritdoc}
      */
     public function getPrice()
     {
@@ -66,10 +54,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product price.
-     *
-     * @param float $price
-     * @return $this
+     * {@inheritdoc}
      */
     public function setPrice($price)
     {
@@ -77,9 +62,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product special price.
-     *
-     * @return float product special price.
+     * {@inheritdoc}
      */
     public function getSpecialPrice()
     {
@@ -87,10 +70,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product special price.
-     *
-     * @param float $specialPrice
-     * @return $this
+     * {@inheritdoc}
      */
     public function setSpecialPrice($specialPrice)
     {
@@ -98,9 +78,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product sku.
-     *
-     * @return string Product sku.
+     * {@inheritdoc}
      */
     public function getSku()
     {
@@ -108,10 +86,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product sku.
-     *
-     * @param string $sku
-     * @return $this
+     * {@inheritdoc}
      */
     public function setSku($sku)
     {
@@ -119,9 +94,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product preorder note.
-     *
-     * @return string Product preorder note.
+     * {@inheritdoc}
      */
     public function getPreOrderNote()
     {
@@ -129,10 +102,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product preorder note.
-     *
-     * @param string $preOrderNote
-     * @return $this
+     * {@inheritdoc}
      */
     public function setPreOrderNote($preOrderNote)
     {
@@ -140,9 +110,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     } 
 
     /**
-     * Returns the product color.
-     *
-     * @return \AlbertMage\Catalog\Api\Data\ProductColorInterface|null
+     * {@inheritdoc}
      */
     public function getColor()
     {
@@ -150,10 +118,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product size.
-     *
-     * @param \AlbertMage\Catalog\Api\Data\ProductColorInterface $color
-     * @return $this
+     * {@inheritdoc}
      */
     public function setColor(\AlbertMage\Catalog\Api\Data\ProductColorInterface $color)
     {
@@ -161,9 +126,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product size.
-     *
-     * @return \AlbertMage\Catalog\Api\Data\ProductSizeInterface|null
+     * {@inheritdoc}
      */
     public function getSize()
     {
@@ -171,10 +134,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product size.
-     *
-     * @param \AlbertMage\Catalog\Api\Data\ProductSizeInterface $size
-     * @return $this
+     * {@inheritdoc}
      */
     public function setSize(\AlbertMage\Catalog\Api\Data\ProductSizeInterface $size)
     {
@@ -182,9 +142,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product description.
-     *
-     * @return string Product description.
+     * {@inheritdoc}
      */
     public function getDescription()
     {
@@ -192,10 +150,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product description.
-     *
-     * @param string $description
-     * @return $this
+     * {@inheritdoc}
      */
     public function setDescription($description)
     {
@@ -203,9 +158,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product mediaGallery.
-     *
-     * @return \AlbertMage\Catalog\Api\Data\ProductMediaGalleryItemInterface[]|null
+     * {@inheritdoc}
      */
     public function getMediaGallery()
     {
@@ -213,10 +166,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product mediaGallery.
-     *
-     * @param \AlbertMage\Catalog\Api\Data\ProductMediaGalleryItemInterface[] $mediaGallery
-     * @return $this
+     * {@inheritdoc}
      */
     public function setMediaGallery(array $mediaGallery)
     {
@@ -224,9 +174,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product stock.
-     *
-     * @return int Product stock.
+     * {@inheritdoc}
      */
     public function getStock()
     {
@@ -234,10 +182,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product stock.
-     *
-     * @param int $stock
-     * @return $this
+     * {@inheritdoc}
      */
     public function setStock($stock)
     {
@@ -245,9 +190,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product available.
-     *
-     * @return bool Product available.
+     * {@inheritdoc}
      */
     public function getAvailable()
     {
@@ -255,10 +198,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product available.
-     *
-     * @param bool $available
-     * @return $this
+     * {@inheritdoc}
      */
     public function setAvailable($available)
     {
@@ -266,9 +206,23 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the product attributes.
-     *
-     * @return \AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface[]|null
+     * {@inheritdoc}
+     */
+    public function getConfigurableAttributes()
+    {
+        return $this->_get(self::CONFIGURABLE_ATTRIBUTES);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConfigurableAttributes(array $attributes)
+    {
+        return $this->setData(self::CONFIGURABLE_ATTRIBUTES, $attributes);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getAttributes()
     {
@@ -276,10 +230,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the product attributes.
-     *
-     * @param \AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface[] $attributes
-     * @return $this
+     * {@inheritdoc}
      */
     public function setAttributes(array $attributes)
     {
@@ -287,9 +238,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Returns the sub-products.
-     *
-     * @return \Magento\Catalog\Api\Data\ProductInterface[]
+     * {@inheritdoc}
      */
     public function getSubProducts()
     {
@@ -297,10 +246,7 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     }
 
     /**
-     * Sets the sub-products.
-     *
-     * @param \Magento\Catalog\Api\Data\ProductInterface[]|null $subProducts
-     * @return $this
+     * {@inheritdoc}
      */
     public function setSubProducts($subProducts)
     {

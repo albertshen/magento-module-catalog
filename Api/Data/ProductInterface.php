@@ -37,6 +37,8 @@ interface ProductInterface extends ExtensibleDataInterface
 
     const AVAILABLE = 'available';
 
+    const CONFIGURABLE_ATTRIBUTES = 'configurable_attributes';
+
     const ATTRIBUTES = 'attributes';
 
     const SUB_PRODUCTS = 'sub_products';
@@ -74,7 +76,7 @@ interface ProductInterface extends ExtensibleDataInterface
     /**
      * Returns the product price.
      *
-     * @return float product price.
+     * @return float|null product price.
      */
     public function getPrice();
 
@@ -89,7 +91,7 @@ interface ProductInterface extends ExtensibleDataInterface
     /**
      * Returns the product special price.
      *
-     * @return float product special price.
+     * @return float|null product special price.
      */
     public function getSpecialPrice();
 
@@ -119,7 +121,7 @@ interface ProductInterface extends ExtensibleDataInterface
     /**
      * Returns the product preorder note.
      *
-     * @return string Product preorder note.
+     * @return string|null Product preorder note.
      */
     public function getPreOrderNote();
 
@@ -139,7 +141,7 @@ interface ProductInterface extends ExtensibleDataInterface
     public function getColor();
 
     /**
-     * Sets the product size.
+     * Sets the product color.
      *
      * @param \AlbertMage\Catalog\Api\Data\ProductColorInterface $color
      * @return $this
@@ -179,14 +181,14 @@ interface ProductInterface extends ExtensibleDataInterface
     /**
      * Returns the product mediaGallery.
      *
-     * @return \AlbertMage\Catalog\Api\Data\ProductMediaGalleryItemInterface[].
+     * @return \AlbertMage\Catalog\Api\Data\ProductMediaInterface[].
      */
     public function getMediaGallery();
 
     /**
      * Sets the product mediaGallery.
      *
-     * @param \AlbertMage\Catalog\Api\Data\ProductMediaGalleryItemInterface[] $mediaGallery
+     * @param \AlbertMage\Catalog\Api\Data\ProductMediaInterface[] $mediaGallery
      * @return $this
      */
     public function setMediaGallery(array $mediaGallery);
@@ -194,7 +196,7 @@ interface ProductInterface extends ExtensibleDataInterface
     /**
      * Returns the product stock.
      *
-     * @return int Product stock.
+     * @return int|null Product stock.
      */
     public function getStock();
 
@@ -222,16 +224,31 @@ interface ProductInterface extends ExtensibleDataInterface
     public function setAvailable($available);
 
     /**
-     * Returns the product attributes.
+     * Returns the configurable attributes.
      *
      * @return \AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface[]|null
+     */
+    public function getConfigurableAttributes();
+
+    /**
+     * Sets the configurable attributes.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface[] $attributes
+     * @return $this
+     */
+    public function setConfigurableAttributes(array $attributes);
+
+    /**
+     * Returns the product attributes.
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductAttributeInterface[]|null
      */
     public function getAttributes();
 
     /**
      * Sets the product attributes.
      *
-     * @param \AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface[] $attributes
+     * @param \AlbertMage\Catalog\Api\Data\ProductAttributeInterface[] $attributes
      * @return $this
      */
     public function setAttributes(array $attributes);
@@ -239,14 +256,14 @@ interface ProductInterface extends ExtensibleDataInterface
     /**
      * Returns the sub-products.
      *
-     * @return \Magento\Catalog\Api\Data\ProductInterface[] Product subProducts.
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface[]|null.
      */
     public function getSubProducts();
 
     /**
      * Sets the sub-products.
      *
-     * @param \Magento\Catalog\Api\Data\ProductInterface[]|null $subProducts
+     * @param \AlbertMage\Catalog\Api\Data\ProductInterface[] $subProducts
      * @return $this
      */
     public function setSubProducts($subProducts);

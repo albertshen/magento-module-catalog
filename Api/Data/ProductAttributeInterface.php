@@ -13,17 +13,19 @@ interface ProductAttributeInterface
 
     const LABEL = 'label';
 
+    const CODE = 'code';
+
     const VALUE = 'value';
 
     /**
-     * Get color label
+     * Get attribute label
      *
-     * @return string color label
+     * @return string attribute label
      */
     public function getLabel();
 
     /**
-     * Set color label
+     * Set attribute label
      *
      * @param string $label
      * @return $this
@@ -31,14 +33,29 @@ interface ProductAttributeInterface
     public function setLabel($label);
 
     /**
-     * Get color value
+     * Get attribute code
      *
-     * @return int color value
+     * @return string attribute code
+     */
+    public function getCode();
+
+    /**
+     * Set attribute code
+     *
+     * @param string $code
+     * @return $this
+     */
+    public function setCode($code);
+
+    /**
+     * Get attribute value
+     *
+     * @return int attribute value
      */
     public function getValue();
 
     /**
-     * Set color value
+     * Set attribute value
      *
      * @param int $value
      * @return $this

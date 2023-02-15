@@ -2,7 +2,7 @@
 /**
  * Copyright © PHP Digital, Inc. All rights reserved.
  */
-namespace AlbertMage\Catalog\Model;
+namespace AlbertMage\Catalog\Model\Product;
 
 use AlbertMage\Catalog\Api\Data\ProductColorInterface;
 

@@ -2,7 +2,7 @@
 /**
  * Copyright © PHP Digital, Inc. All rights reserved.
  */
-namespace AlbertMage\Catalog\Model;
+namespace AlbertMage\Catalog\Model\Product;
 
 use AlbertMage\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Catalog\Model\AbstractModel;
@@ -29,6 +29,22 @@ class Attribute extends AbstractModel implements ProductAttributeInterface
     public function setLabel($label)
     {
         return $this->setData(self::LABEL, $label);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCode()
+    {
+        return $this->getData(self::CODE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setCode($code)
+    {
+        return $this->setData(self::CODE, $code);
     }
 
     /**

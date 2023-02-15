@@ -3,6 +3,7 @@
     <preference for="AlbertMage\Catalog\Api\Data\ProductInterface" type="AlbertMage\Catalog\Model\Product"/>
     <preference for="AlbertMage\Catalog\Api\Data\ProductColorInterface" type="AlbertMage\Catalog\Model\Product\Color"/>
     <preference for="AlbertMage\Catalog\Api\Data\ProductSizeInterface" type="AlbertMage\Catalog\Model\Product\Size"/>
+    <preference for="AlbertMage\Catalog\Api\Data\ProductMediaInterface" type="AlbertMage\Catalog\Model\Product\Media"/>
     <preference for="AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface" type="AlbertMage\Catalog\Model\ConfigurableProduct\Attribute"/>
     <preference for="AlbertMage\Catalog\Api\Data\ConfigurableOptionValueInterface" type="AlbertMage\Catalog\Model\ConfigurableProduct\OptionValue"/>
     <preference for="AlbertMage\Catalog\Api\Data\ProductListItemInterface" type="AlbertMage\Catalog\Model\ProductListItem"/>
@@ -13,4 +14,13 @@
     <preference for="AlbertMage\Catalog\Api\ProductManagementInterface" type="AlbertMage\Catalog\Model\ProductManagement"/>
     <preference for="AlbertMage\Catalog\Api\CategoryManagementInterface" type="AlbertMage\Catalog\Model\CategoryManagement"/>
     <preference for="AlbertMage\Catalog\Api\SearchInterface" type="AlbertMage\Catalog\Model\Search"/>
+    <type name="AlbertMage\Catalog\Api\ProductManagementInterface">
+        <arguments>
+            <argument name="showAttributes" xsi:type="array">
+                <item name="color" xsi:type="string">color</item>
+                <item name="size" xsi:type="string">size</item>
+            </argument>
+            <argument name="swatchImageCode" xsi:type="string">color</argument>
+        </arguments>
+    </type>
 </config>

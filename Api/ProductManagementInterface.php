@@ -13,26 +13,10 @@ interface ProductManagementInterface
 {
 
     /**
-     * Create product by id
+     * Get product by id
      * 
      * @param int $productId
      * @return \AlbertMage\Catalog\Api\Data\ProductInterface
      */
     public function getProduct($productId);
-
-    /**
-     * Create product by id
-     * 
-     * @param int $productId
-     * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface
-     */
-    public function createProductListItemById($productId);
-
-    /**
-     * Create product
-     * 
-     * @param \Magento\Catalog\Model\Product
-     * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface
-     */
-    public function createProductListItem(\Magento\Catalog\Model\Product $product);
 }
