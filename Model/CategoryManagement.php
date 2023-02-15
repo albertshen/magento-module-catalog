@@ -140,6 +140,8 @@ class CategoryManagement implements \AlbertMage\Catalog\Api\CategoryManagementIn
         $newCategory = $this->categoryInterfaceFactory->create();
         $newCategory->setId($category->getId());
         $newCategory->setName($category->getName());
+        //$category->getProductCollection()->count() Avaliable count, $category->getProductCount() All count
+        $newCategory->setProductCount($category->getProductCollection()->count());
         $newCategory->setUrl($category->getUrl());
         $newCategory->setThumbnail($category->getImageUrl());
 

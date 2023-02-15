@@ -50,6 +50,22 @@ class Category extends AbstractExtensibleObject implements CategoryInterface
     /**
      * {@inheritdoc}
      */
+    public function getProductCount()
+    {
+        return $this->_get(self::KEY_PRODUCT_COUNT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setProductCount($productCount)
+    {
+        return $this->setData(self::KEY_PRODUCT_COUNT, $productCount);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getUrl()
     {
         return $this->_get(self::KEY_URL);

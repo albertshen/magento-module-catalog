@@ -181,7 +181,7 @@ interface ProductInterface extends ExtensibleDataInterface
     /**
      * Returns the product mediaGallery.
      *
-     * @return \AlbertMage\Catalog\Api\Data\ProductMediaInterface[].
+     * @return \AlbertMage\Catalog\Api\Data\ProductMediaInterface[]|null
      */
     public function getMediaGallery();
 

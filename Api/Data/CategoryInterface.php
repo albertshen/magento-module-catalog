@@ -17,6 +17,8 @@ interface CategoryInterface extends ExtensibleDataInterface
 
     const KEY_NAME = 'name';
 
+    const KEY_PRODUCT_COUNT = 'product_count';
+
     const KEY_URL = 'url';
 
     const KEY_THUMBNAIL = 'thumbnail';
@@ -24,29 +26,29 @@ interface CategoryInterface extends ExtensibleDataInterface
     const KEY_CHILDREN = 'children';
 
     /**
-     * Set product id
+     * Get category id
      *
-     * @param int $productId
-     * @return $this
-     */
-    public function setId($productId);
-
-    /**
-     * Get product id
-     *
-     * @return int product id
+     * @return int category id
      */
     public function getId();
 
     /**
-     * Returns the product name.
+     * Set category id
      *
-     * @return string|null Product name. Otherwise, null.
+     * @param int $categoryId
+     * @return $this
+     */
+    public function setId($categoryId);
+
+    /**
+     * Returns the category name.
+     *
+     * @return string|null Category name. Otherwise, null.
      */
     public function getName();
 
     /**
-     * Sets the product name.
+     * Sets the category name.
      *
      * @param string $name
      * @return $this
@@ -54,9 +56,24 @@ interface CategoryInterface extends ExtensibleDataInterface
     public function setName($name);
 
     /**
+     * Returns the product count.
+     *
+     * @return int|null Product count. Otherwise, null.
+     */
+    public function getProductCount();
+
+    /**
+     * Sets the product count.
+     *
+     * @param int $productCount
+     * @return $this
+     */
+    public function setProductCount($productCount);
+
+    /**
      * Returns url.
      *
-     * @return string url.
+     * @return string
      */
     public function getUrl();
 
@@ -69,14 +86,14 @@ interface CategoryInterface extends ExtensibleDataInterface
     public function setUrl($url);
 
     /**
-     * Returns the product thumbnail.
+     * Returns the category thumbnail.
      *
-     * @return string Product thumbnail.
+     * @return string Category thumbnail.
      */
     public function getThumbnail();
 
     /**
-     * Sets the product thumbnail.
+     * Sets the category thumbnail.
      *
      * @param string $thumbnail
      * @return $this
