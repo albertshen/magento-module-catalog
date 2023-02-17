@@ -231,7 +231,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
      */
     public function getProductListItem(\Magento\Catalog\Model\Product $product)
     {
-        return $this->productManagement->createProductListItem($product);
+        return $this->productManagement->getProductListItem($product);
     }
 
     /**

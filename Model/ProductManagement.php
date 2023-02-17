@@ -327,15 +327,58 @@ class ProductManagement implements ProductManagementInterface
     }
 
     /**
-     * Create product by id
+     * Get product by id
      * 
      * @param int $productId
+     * @param boolean $cache
      * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface
      */
-    public function createProductListItemById($productId)
+    public function getProductListItemById($productId, $cached = true)
     {
+        
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $cache = $objectManager->get(\AlbertMage\Core\Model\Cache\RedisAdapter::class);
+
+        if ($cached) {
+            $data = $cache->get($this->getProductListItemCacheKey($productId));
+            if (!$data) {
+                $product = $this->productFactory->create()->load($productId);
+                return $this->getProductListItem($product);
+            }
+            $serviceInputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceInputProcessor::class);
+            return $serviceInputProcessor->convertValue($data, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
+        }
+
         $product = $this->productFactory->create()->load($productId);
         return $this->createProductListItem($product);
+    }
+
+    /**
+     * Get product
+     * 
+     * @param \Magento\Catalog\Model\Product
+     * @param boolean $cache
+     * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface
+     */
+    public function getProductListItem(\Magento\Catalog\Model\Product $product, $cached = true)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $cache = $objectManager->get(\AlbertMage\Core\Model\Cache\RedisAdapter::class);
+
+        if ($cached) {
+            //$cache->clear('data.product_list');
+            $data = $cache->get($this->getProductListItemCacheKey($product->getId()), function ($item) use ($product, $objectManager) {
+                $item->expiresAfter(3600);
+                $newProduct = $this->createProductListItem($product);
+                $serviceOutputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceOutputProcessor::class);
+                return $serviceOutputProcessor->convertValue($newProduct, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
+            });
+            $serviceInputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceInputProcessor::class);
+            return $serviceInputProcessor->convertValue($data, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
+        }
+
+        return $this->createProductListItem($product);
+
     }
 
     /**
@@ -346,28 +389,17 @@ class ProductManagement implements ProductManagementInterface
      */
     public function createProductListItem(\Magento\Catalog\Model\Product $product)
     {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $cache = $objectManager->get(\AlbertMage\Core\Model\Cache\RedisAdapter::class);
-
-        //$cache->clear('data.product_list');
-        $data = $cache->get($this->getProductListItemCacheKey($product->getId()), function ($item) use ($product, $objectManager) {
-            $item->expiresAfter(3600);
-            $newProduct = $this->productListItemInterfaceFactory->create();
-            $newProduct->setId($product->getId());
-            $newProduct->setName($product->getName());
+        $newProduct = $this->productListItemInterfaceFactory->create();
+        $newProduct->setId($product->getId());
+        $newProduct->setName($product->getName());
+        $newProduct->setThumbnail($product->getMediaConfig()->getMediaUrl($product->getThumbnail()));
+        $newProduct->setPrice($product->getPrice());
+        if ($product->getTypeId() == 'configurable') {
+            $product = $this->getDefaultProduct($product);
             $newProduct->setThumbnail($product->getMediaConfig()->getMediaUrl($product->getThumbnail()));
             $newProduct->setPrice($product->getPrice());
-            if ($product->getTypeId() == 'configurable') {
-                $product = $this->getDefaultProduct($product);
-                $newProduct->setThumbnail($product->getMediaConfig()->getMediaUrl($product->getThumbnail()));
-                $newProduct->setPrice($product->getPrice());
-            }
-            $serviceOutputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceOutputProcessor::class);
-            return $serviceOutputProcessor->convertValue($newProduct, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
-        });
-        $serviceInputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceInputProcessor::class);
-        return $serviceInputProcessor->convertValue($data, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
-
+        }
+        return $newProduct;
     }
 
     /**
