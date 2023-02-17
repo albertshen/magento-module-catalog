@@ -23,6 +23,8 @@ interface ProductListItemInterface extends ExtensibleDataInterface
 
     const KEY_THUMBNAIL = 'thumbnail';
 
+    const CACHE_PREFIX = 'data.product_list_item';
+
     /**
      * Set product id
      *

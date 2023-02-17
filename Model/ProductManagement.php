@@ -124,7 +124,6 @@ class ProductManagement implements ProductManagementInterface
     public function getProduct($productId)
     {
         $product = $this->productFactory->create()->load($productId);
-
         return $this->createProductDetail($product);
     }
 
@@ -142,6 +141,7 @@ class ProductManagement implements ProductManagementInterface
         $productDetail->setId($product->getId());
         $productDetail->setName($product->getName());
         $productDetail->setSku($product->getSku());
+        $productDetail->setTypeId($product->getTypeId());
         //$productDetail->setPreOrderNote();
         $productDetail->setDescription($product->getDescription());
 
@@ -153,20 +153,20 @@ class ProductManagement implements ProductManagementInterface
 
         $productDetail->setAvailable($product->isAvailable());
 
-        if ($product->getTypeInstance() instanceof \Magento\Catalog\Model\Product\Type\Simple\Interceptor) {
+        if ($product->getTypeId() == 'simple') {
             $productDetail->setPrice($product->getPrice());
             $productDetail->setSpecialPrice($product->getSpecialPrice());
             //Prepare product attributes
             $this->setProductAttributes($productDetail, $product);
         }
 
-        if ($product->getTypeInstance() instanceof \Magento\ConfigurableProduct\Model\Product\Type\Configurable\Interceptor) {
-
-            //Prepare attribute filter
-            $this->setConfigurableAttributes($productDetail, $product);
+        if ($product->getTypeId() == 'configurable') {
 
             //Prepare sub products
             $this->setSubProducts($productDetail, $product);
+
+            //Prepare attribute filter
+            $this->setConfigurableAttributes($productDetail, $product);
         }
 
         return $productDetail;
@@ -194,6 +194,28 @@ class ProductManagement implements ProductManagementInterface
             }
         }
         $productDetail->setAttributes($productAttributes);
+    }
+
+    /**
+     * Set sub products
+     * 
+     * @param \AlbertMage\Catalog\Model\Product $productDetail
+     * @param \Magento\Catalog\Model\Product $product
+     * @return void
+     */
+    private function setSubProducts(
+        \AlbertMage\Catalog\Model\Product $productDetail,
+        \Magento\Catalog\Model\Product $product
+    ) {
+        $usedProductIds = $product->getTypeInstance()->getUsedProductIds($product);
+        $subProducts = [];
+        foreach ($usedProductIds as $usedProductId) {
+            $usedProduct = $this->productFactory->create()->load($usedProductId);
+            if (!$usedProduct->isDisabled()) {
+                $subProducts[] = $this->createProductDetail($usedProduct);
+            }
+        }
+        $productDetail->setSubProducts($subProducts);
     }
 
     /**
@@ -305,26 +327,6 @@ class ProductManagement implements ProductManagementInterface
     }
 
     /**
-     * Set sub products
-     * 
-     * @param \AlbertMage\Catalog\Model\Product $productDetail
-     * @param \Magento\Catalog\Model\Product $product
-     * @return void
-     */
-    private function setSubProducts(
-        \AlbertMage\Catalog\Model\Product $productDetail,
-        \Magento\Catalog\Model\Product $product
-    ) {
-        $usedProductIds = $product->getTypeInstance()->getUsedProductIds($product);
-        $subProducts = [];
-        foreach ($usedProductIds as $usedProductId) {
-            $usedProduct = $this->productFactory->create()->load($usedProductId);
-            $subProducts[] = $this->createProductDetail($usedProduct);
-        }
-        $productDetail->setSubProducts($subProducts);
-    }
-
-    /**
      * Create product by id
      * 
      * @param int $productId
@@ -344,11 +346,58 @@ class ProductManagement implements ProductManagementInterface
      */
     public function createProductListItem(\Magento\Catalog\Model\Product $product)
     {
-        $newProduct = $this->productListItemInterfaceFactory->create();
-        $newProduct->setId($product->getId());
-        $newProduct->setName($product->getName());
-        $newProduct->setThumbnail($product->getMediaConfig()->getBaseMediaUrl() . $product->getThumbnail());
-        $newProduct->setPrice($product->getPrice());
-        return $newProduct;
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $cache = $objectManager->get(\AlbertMage\Core\Model\Cache\RedisAdapter::class);
+
+        //$cache->clear('data.product_list');
+        $data = $cache->get($this->getProductListItemCacheKey($product->getId()), function ($item) use ($product, $objectManager) {
+            $item->expiresAfter(3600);
+            $newProduct = $this->productListItemInterfaceFactory->create();
+            $newProduct->setId($product->getId());
+            $newProduct->setName($product->getName());
+            $newProduct->setThumbnail($product->getMediaConfig()->getMediaUrl($product->getThumbnail()));
+            $newProduct->setPrice($product->getPrice());
+            if ($product->getTypeId() == 'configurable') {
+                $product = $this->getDefaultProduct($product);
+                $newProduct->setThumbnail($product->getMediaConfig()->getMediaUrl($product->getThumbnail()));
+                $newProduct->setPrice($product->getPrice());
+            }
+            $serviceOutputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceOutputProcessor::class);
+            return $serviceOutputProcessor->convertValue($newProduct, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
+        });
+        $serviceInputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceInputProcessor::class);
+        return $serviceInputProcessor->convertValue($data, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
+
+    }
+
+    /**
+     * Get default product
+     * 
+     * @param \Magento\Catalog\Model\Product
+     * @return \Magento\Catalog\Model\Product
+     */
+    private function getDefaultProduct(\Magento\Catalog\Model\Product $product)
+    {
+
+        $productCollection = $product->getTypeInstance()->getUsedProductCollection($product);
+        $productCollection->addAttributeToFilter('is_default', 1);
+        if ($productId = $productCollection->getFirstItem()->getId()) {
+            return $this->productFactory->create()->load($productId);
+        }
+
+        $productCollection = $product->getTypeInstance()->getUsedProductCollection($product);
+        return $this->productFactory->create()->load($productCollection->getFirstItem()->getId());
+
+    }
+
+    /**
+     * Get product list item cache key
+     * 
+     * @param int $productId
+     * @return string
+     */
+    private function getProductListItemCacheKey(int $productId)
+    {
+        return \AlbertMage\Catalog\Api\Data\ProductListItemInterface::CACHE_PREFIX.'.'.$productId;
     }
 }

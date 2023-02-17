@@ -41,6 +41,8 @@ interface ProductInterface extends ExtensibleDataInterface
 
     const ATTRIBUTES = 'attributes';
 
+    const TYPE_ID = 'type_id';
+
     const SUB_PRODUCTS = 'sub_products';
 
     /**
@@ -252,6 +254,21 @@ interface ProductInterface extends ExtensibleDataInterface
      * @return $this
      */
     public function setAttributes(array $attributes);
+
+    /**
+     * Returns type id.
+     *
+     * @return string
+     */
+    public function getTypeId();
+
+    /**
+     * Sets type id.
+     *
+     * @param string $typeId
+     * @return $this
+     */
+    public function setTypeId($typeId);
 
     /**
      * Returns the sub-products.

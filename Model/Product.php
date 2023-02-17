@@ -240,6 +240,23 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     /**
      * {@inheritdoc}
      */
+    public function getTypeId()
+    {
+        return $this->_get(self::TYPE_ID);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTypeId($typeId)
+    {
+        return $this->setData(self::TYPE_ID, $typeId);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
     public function getSubProducts()
     {
         return $this->_get(self::SUB_PRODUCTS);
