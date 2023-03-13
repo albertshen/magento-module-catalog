@@ -6,6 +6,8 @@ namespace AlbertMage\Catalog\Api\Data;
 
 /**
  * Interface ConfigurableOptionValue
+ * Reference to Magento\ConfigurableProduct\Api\Data\OptionValueInterface
+ * 
  * @author Albert Shen <albertshen1206@gmail.com>
  */
 interface ConfigurableOptionValueInterface extends \Magento\Framework\Api\ExtensibleDataInterface
@@ -15,13 +17,11 @@ interface ConfigurableOptionValueInterface extends \Magento\Framework\Api\Extens
 
     const LABEL = 'label';
 
+    const VALUE = 'value';
+
     const SWATCH_IMAGE = 'swatch_image';
 
     const PRODUCT_SUPER_ATTRIBUTE_ID = 'product_super_attribute_id';
-
-    const DEFAULT_LABEL = 'default_label';
-
-    const STORE_LABEL = 'store_label';
 
     const USE_DEFAULT_VALUE = 'use_default_value';
 
@@ -56,6 +56,21 @@ interface ConfigurableOptionValueInterface extends \Magento\Framework\Api\Extens
     public function setLabel($label);
 
     /**
+     * Get swatch value
+     *
+     * @return string|null
+     */
+    public function getValue();
+
+    /**
+     * Set swatch value
+     *
+     * @param string $value
+     * @return $this
+     */
+    public function setValue($value);
+
+    /**
      * Get swatch image
      *
      * @return string|null
@@ -86,41 +101,11 @@ interface ConfigurableOptionValueInterface extends \Magento\Framework\Api\Extens
     public function setProductSuperAttributeId($productSuperAttributeId);
 
     /**
-     * Get default label
-     *
-     * @return string|null
-     */
-    public function getDefaultLabel();
-
-    /**
-     * Set default label
-     *
-     * @param string $defaultLabel
-     * @return $this
-     */
-    public function setDefaultLabel($defaultLabel);
-
-    /**
-     * Get store label
-     *
-     * @return string|null
-     */
-    public function getStoreLabel();
-
-    /**
-     * Set store label
-     *
-     * @param string $storeLabel
-     * @return $this
-     */
-    public function setStoreLabel($storeLabel);
-
-    /**
      * Get use default value
      *
      * @return bool|null
      */
-    public function getUserDefaultValue();
+    public function getUseDefaultValue();
 
     /**
      * Set use default value
@@ -128,7 +113,7 @@ interface ConfigurableOptionValueInterface extends \Magento\Framework\Api\Extens
      * @param bool $useDefaultValue
      * @return $this
      */
-    public function setUserDefaultValue($useDefaultValue);
+    public function setUseDefaultValue($useDefaultValue);
 
     /**
      * Retrieve existing extension attributes object or create a new one.

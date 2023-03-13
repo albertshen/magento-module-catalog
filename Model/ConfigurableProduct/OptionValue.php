@@ -50,6 +50,22 @@ class OptionValue extends AbstractExtensibleModel implements ConfigurableOptionV
     /**
      * {@inheritdoc}
      */
+    public function getValue()
+    {
+        return $this->getData(self::VALUE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setValue($value)
+    {
+        return $this->setData(self::VALUE, $value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getSwatchImage()
     {
         return $this->getData(self::SWATCH_IMAGE);
@@ -82,39 +98,7 @@ class OptionValue extends AbstractExtensibleModel implements ConfigurableOptionV
     /**
      * {@inheritdoc}
      */
-    public function getDefaultLabel()
-    {
-        return $this->getData(self::DEFAULT_LABEL);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setDefaultLabel($defaultLabel)
-    {
-        return $this->setData(self::DEFAULT_LABEL, $defaultLabel);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStoreLabel()
-    {
-        return $this->getData(self::STORE_LABEL);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setStoreLabel($storeLabel)
-    {
-        return $this->setData(self::STORE_LABEL, $storeLabel);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUserDefaultValue()
+    public function getUseDefaultValue()
     {
         return $this->getData(self::USE_DEFAULT_VALUE);
     }
@@ -122,7 +106,7 @@ class OptionValue extends AbstractExtensibleModel implements ConfigurableOptionV
     /**
      * {@inheritdoc}
      */
-    public function setUserDefaultValue($useDefaultValue)
+    public function setUseDefaultValue($useDefaultValue)
     {
         return $this->setData(self::USE_DEFAULT_VALUE, $useDefaultValue);
     }

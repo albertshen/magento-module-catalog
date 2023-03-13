@@ -17,25 +17,29 @@ interface ProductInterface extends ExtensibleDataInterface
 
     const NAME = 'name';
 
+    const SKU = 'sku';
+
     const PRICE = 'price';
 
     const SPECIAL_PRICE = 'special_price';
 
-    const SKU = 'sku';
+    const AVAILABLE = 'available';
 
-    const PRE_ORDER_NOTE = 'pre_order_note';
+    const STOCK = 'stock';
+
+    const CATEGORIES = 'categories';
 
     const COLOR = 'color';
 
     const SIZE = 'size';
 
+    const PRE_ORDER_NOTE = 'pre_order_note';
+
     const DESCRIPTION = 'description';
 
+    const THUMBNAIL = 'thumbnail';
+
     const MEDIA_GALLERY = 'media_gallery';
-
-    const STOCK = 'stock';
-
-    const AVAILABLE = 'available';
 
     const CONFIGURABLE_ATTRIBUTES = 'configurable_attributes';
 
@@ -43,7 +47,11 @@ interface ProductInterface extends ExtensibleDataInterface
 
     const TYPE_ID = 'type_id';
 
-    const SUB_PRODUCTS = 'sub_products';
+    const OPTION_ID = 'option_id';
+
+    const BUNDLE_OPTIONS = 'bundle_options';
+
+    const CHILDREN_PRODUCTS = 'children_products';
 
     /**
      * Get product id
@@ -76,6 +84,21 @@ interface ProductInterface extends ExtensibleDataInterface
     public function setName($name);
 
     /**
+     * Returns the product sku.
+     *
+     * @return string Product sku.
+     */
+    public function getSku();
+
+    /**
+     * Sets the product sku.
+     *
+     * @param string $sku
+     * @return $this
+     */
+    public function setSku($sku);
+
+    /**
      * Returns the product price.
      *
      * @return float|null product price.
@@ -106,94 +129,19 @@ interface ProductInterface extends ExtensibleDataInterface
     public function setSpecialPrice($specialPrice);
 
     /**
-     * Returns the product sku.
+     * Returns the product available.
      *
-     * @return string Product sku.
+     * @return bool Product available.
      */
-    public function getSku();
+    public function getAvailable();
 
     /**
-     * Sets the product sku.
+     * Sets the product available.
      *
-     * @param string $sku
+     * @param bool $available
      * @return $this
      */
-    public function setSku($sku);
-
-    /**
-     * Returns the product preorder note.
-     *
-     * @return string|null Product preorder note.
-     */
-    public function getPreOrderNote();
-
-    /**
-     * Sets the product preorder note.
-     *
-     * @param string $preOrderNote
-     * @return $this
-     */
-    public function setPreOrderNote($preOrderNote);
-
-    /**
-     * Returns the product color.
-     *
-     * @return \AlbertMage\Catalog\Api\Data\ProductColorInterface|null
-     */
-    public function getColor();
-
-    /**
-     * Sets the product color.
-     *
-     * @param \AlbertMage\Catalog\Api\Data\ProductColorInterface $color
-     * @return $this
-     */
-    public function setColor(\AlbertMage\Catalog\Api\Data\ProductColorInterface $color);
-
-    /**
-     * Returns the product size.
-     *
-     * @return \AlbertMage\Catalog\Api\Data\ProductSizeInterface|null
-     */
-    public function getSize();
-
-    /**
-     * Sets the product size.
-     *
-     * @param \AlbertMage\Catalog\Api\Data\ProductSizeInterface $size
-     * @return $this
-     */
-    public function setSize(\AlbertMage\Catalog\Api\Data\ProductSizeInterface $size);
-
-    /**
-     * Returns the product description.
-     *
-     * @return string Product description.
-     */
-    public function getDescription();
-
-    /**
-     * Sets the product description.
-     *
-     * @param string $description
-     * @return $this
-     */
-    public function setDescription($description);
-
-    /**
-     * Returns the product mediaGallery.
-     *
-     * @return \AlbertMage\Catalog\Api\Data\ProductMediaInterface[]|null
-     */
-    public function getMediaGallery();
-
-    /**
-     * Sets the product mediaGallery.
-     *
-     * @param \AlbertMage\Catalog\Api\Data\ProductMediaInterface[] $mediaGallery
-     * @return $this
-     */
-    public function setMediaGallery(array $mediaGallery);
+    public function setAvailable($available);
 
     /**
      * Returns the product stock.
@@ -211,31 +159,138 @@ interface ProductInterface extends ExtensibleDataInterface
     public function setStock($stock);
 
     /**
-     * Returns the product available.
+     * Returns the categories.
      *
-     * @return bool Product available.
+     * @return \AlbertMage\Catalog\Api\Data\ProductCategoriesInterface|null
      */
-    public function getAvailable();
+    public function getCategories();
 
     /**
-     * Sets the product available.
+     * Sets the product categories.
      *
-     * @param bool $available
+     * @param string $categories
      * @return $this
      */
-    public function setAvailable($available);
+    public function setCategories($categories);
+
+    // /**
+    //  * Returns the product color.
+    //  * Main Visual Swatch
+    //  *
+    //  * @return \AlbertMage\Catalog\Api\Data\ProductVisualSwatchInterface|null
+    //  */
+    // public function getVisualSwatch();
+
+    // /**
+    //  * Sets the product color.
+    //  * Main Visual Swatch
+    //  *
+    //  * @param \AlbertMage\Catalog\Api\Data\ProductVisualSwatchInterface $color
+    //  * @return $this
+    //  */
+    // public function setColor(\AlbertMage\Catalog\Api\Data\ProductVisualSwatchInterface $color);
+
+    /**
+     * Returns the product color.
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductVisualSwatchInterface|null
+     */
+    public function getColor();
+
+    /**
+     * Sets the product color.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ProductVisualSwatchInterface $color
+     * @return $this
+     */
+    public function setColor(\AlbertMage\Catalog\Api\Data\ProductVisualSwatchInterface $color);
+
+    /**
+     * Returns the product size.
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductAttributeInterface|null
+     */
+    public function getSize();
+
+    /**
+     * Sets the product size.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ProductAttributeInterface $size
+     * @return $this
+     */
+    public function setSize(\AlbertMage\Catalog\Api\Data\ProductAttributeInterface $size);
+
+    /**
+     * Returns the product preorder note.
+     *
+     * @return string|null
+     */
+    public function getPreOrderNote();
+
+    /**
+     * Sets the product preorder note.
+     *
+     * @param string $preOrderNote
+     * @return $this
+     */
+    public function setPreOrderNote($preOrderNote);
+
+    /**
+     * Returns the product description.
+     *
+     * @return string|null.
+     */
+    public function getDescription();
+
+    /**
+     * Sets the product description.
+     *
+     * @param string $description
+     * @return $this
+     */
+    public function setDescription($description);
+
+    /**
+     * Returns the product thumbnail.
+     *
+     * @return string|null.
+     */
+    public function getThumbnail();
+
+    /**
+     * Sets the product thumbnail.
+     *
+     * @param string $thumbnail
+     * @return $this
+     */
+    public function setThumbnail($thumbnail);
+
+    /**
+     * Returns the product mediaGallery.
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductMediaInterface[]|null
+     */
+    public function getMediaGallery();
+
+    /**
+     * Sets the product mediaGallery.
+     *
+     * @param \AlbertMage\Catalog\Api\Data\ProductMediaInterface[] $mediaGallery
+     * @return $this
+     */
+    public function setMediaGallery(array $mediaGallery);
 
     /**
      * Returns the configurable attributes.
      *
-     * @return \AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface[]|null
+     * @return \AlbertMage\Catalog\Api\Data\ConfigurableOptionInterface[]|null
      */
     public function getConfigurableAttributes();
 
     /**
      * Sets the configurable attributes.
      *
-     * @param \AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface[] $attributes
+     * @param \AlbertMage\Catalog\Api\Data\ConfigurableOptionInterface[] $attributes
      * @return $this
      */
     public function setConfigurableAttributes(array $attributes);
@@ -271,19 +326,49 @@ interface ProductInterface extends ExtensibleDataInterface
     public function setTypeId($typeId);
 
     /**
-     * Returns the sub-products.
+     * Returns the product optionId.
+     *
+     * @return string|null
+     */
+    public function getOptionId();
+
+    /**
+     * Sets the product optionId.
+     *
+     * @param string $optionId
+     * @return $this
+     */
+    public function setOptionId($optionId);
+
+    /**
+     * Returns the product bundle options.
+     *
+     * @return \Magento\Bundle\Api\Data\OptionInterface[]|null
+     */
+    public function getBundleOptions();
+
+    /**
+     * Sets the product bundle options.
+     *
+     * @param \Magento\Bundle\Api\Data\OptionInterface[] $bundleOptions
+     * @return $this
+     */
+    public function setBundleOptions($bundleOptions);
+
+    /**
+     * Returns the children-products.
      *
      * @return \AlbertMage\Catalog\Api\Data\ProductInterface[]|null.
      */
-    public function getSubProducts();
+    public function getChildrenProducts();
 
     /**
-     * Sets the sub-products.
+     * Sets the children-products.
      *
-     * @param \AlbertMage\Catalog\Api\Data\ProductInterface[] $subProducts
+     * @param \AlbertMage\Catalog\Api\Data\ProductInterface[] $childrenProducts
      * @return $this
      */
-    public function setSubProducts($subProducts);
+    public function setChildrenProducts($childrenProducts);
 
     /**
      * Retrieve existing extension attributes object or create a new one.

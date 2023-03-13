@@ -4,7 +4,7 @@
  */
 namespace AlbertMage\Catalog\Model\ConfigurableProduct;
 
-use AlbertMage\Catalog\Api\Data\ConfigurableAttributeInterface;
+use AlbertMage\Catalog\Api\Data\ConfigurableOptionInterface;
 use Magento\Framework\Model\AbstractExtensibleModel;
 
 /**
@@ -12,7 +12,7 @@ use Magento\Framework\Model\AbstractExtensibleModel;
  *
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-class Attribute extends AbstractExtensibleModel implements ConfigurableAttributeInterface
+class Attribute extends AbstractExtensibleModel implements ConfigurableOptionInterface
 {
 
     /**
@@ -66,6 +66,22 @@ class Attribute extends AbstractExtensibleModel implements ConfigurableAttribute
     /**
      * {@inheritdoc}
      */
+    public function getIsVisualSwatch()
+    {
+        return $this->getData(self::IS_VISUAL_SWATCH);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setIsVisualSwatch($isVisualSwatch)
+    {
+        return $this->setData(self::IS_VISUAL_SWATCH, $isVisualSwatch);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getValues()
     {
         return $this->getData(self::VALUES);
@@ -82,7 +98,7 @@ class Attribute extends AbstractExtensibleModel implements ConfigurableAttribute
     /**
      * {@inheritdoc}
      *
-     * @return \AlbertMage\Catalog\Api\Data\ConfigurableAttributeExtensionInterface|null
+     * @return \AlbertMage\Catalog\Api\Data\ConfigurableOptionExtensionInterface|null
      */
     public function getExtensionAttributes()
     {
@@ -92,11 +108,11 @@ class Attribute extends AbstractExtensibleModel implements ConfigurableAttribute
     /**
      * {@inheritdoc}
      *
-     * @param \AlbertMage\Catalog\Api\Data\ConfigurableAttributeExtensionInterface $extensionAttributes
+     * @param \AlbertMage\Catalog\Api\Data\ConfigurableOptionExtensionInterface $extensionAttributes
      * @return $this
      */
     public function setExtensionAttributes(
-        \AlbertMage\Catalog\Api\Data\ConfigurableAttributeExtensionInterface $extensionAttributes
+        \AlbertMage\Catalog\Api\Data\ConfigurableOptionExtensionInterface $extensionAttributes
     ) {
         return $this->_setExtensionAttributes($extensionAttributes);
     }

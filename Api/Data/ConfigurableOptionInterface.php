@@ -5,10 +5,12 @@
 namespace AlbertMage\Catalog\Api\Data;
 
 /**
- * Interface ConfigurableAttributes
+ * Interface ConfigurableOption
+ * Reference to Magento\ConfigurableProduct\Api\Data\OptionInterface
+ * 
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-interface ConfigurableAttributeInterface extends \Magento\Framework\Api\ExtensibleDataInterface
+interface ConfigurableOptionInterface extends \Magento\Framework\Api\ExtensibleDataInterface
 {
 
     const ATTRIBUTE_ID = 'attribute_id';
@@ -16,6 +18,8 @@ interface ConfigurableAttributeInterface extends \Magento\Framework\Api\Extensib
     const LABEL = 'label';
 
     const CODE = 'code';
+
+    const IS_VISUAL_SWATCH = 'is_visual_swatch';
 
     const VALUES = 'values';
 
@@ -65,6 +69,21 @@ interface ConfigurableAttributeInterface extends \Magento\Framework\Api\Extensib
     public function setCode($code);
 
     /**
+     * Get attribute isVisualSwatch
+     *
+     * @return bool|null
+     */
+    public function getIsVisualSwatch();
+
+    /**
+     * Set attribute isVisualSwatch
+     *
+     * @param bool $isVisualSwatch
+     * @return $this
+     */
+    public function setIsVisualSwatch($isVisualSwatch);
+    
+    /**
      * Get attribute values
      *
      * @return \AlbertMage\Catalog\Api\Data\ConfigurableOptionValueInterface[]|null
@@ -82,18 +101,18 @@ interface ConfigurableAttributeInterface extends \Magento\Framework\Api\Extensib
     /**
      * Retrieve existing extension attributes object or create a new one.
      *
-     * @return \AlbertMage\Catalog\Api\Data\ConfigurableAttributeExtensionInterface|null
+     * @return \AlbertMage\Catalog\Api\Data\ConfigurableOptionExtensionInterface|null
      */
     public function getExtensionAttributes();
 
     /**
      * Set an extension attributes object.
      *
-     * @param \AlbertMage\Catalog\Api\Data\ConfigurableAttributeExtensionInterface $extensionAttributes
+     * @param \AlbertMage\Catalog\Api\Data\ConfigurableOptionExtensionInterface $extensionAttributes
      * @return $this
      */
     public function setExtensionAttributes(
-        \AlbertMage\Catalog\Api\Data\ConfigurableAttributeExtensionInterface $extensionAttributes
+        \AlbertMage\Catalog\Api\Data\ConfigurableOptionExtensionInterface $extensionAttributes
     );
 
 }
