@@ -5,13 +5,13 @@
 namespace AlbertMage\Catalog\Api\Data;
 
 /**
- * Interface FilterItem
+ * Interface Layer FilterItem
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-interface FilterItemInterface
+interface LayerFilterItemInterface
 {
 
-    const KEY_DISPLAY = 'display';
+    const KEY_LABEL = 'label';
 
     const KEY_VALUE = 'value';
 
@@ -20,19 +20,19 @@ interface FilterItemInterface
     const KEY_IS_SELECTED = 'is_selected';
 
     /**
-     * Returns display.
+     * Returns label.
      *
      * @return string.
      */
-    public function getDisplay();
+    public function getLabel();
 
     /**
-     * Sets the display.
+     * Sets the label.
      *
      * @param string $field
      * @return $this
      */
-    public function setDisplay($display);
+    public function setLabel($label);
 
     /**
      * Returns value.

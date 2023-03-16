@@ -10,7 +10,6 @@ namespace AlbertMage\Catalog\Api;
  */
 interface ProductGeneratorInterface
 {
-
     /**
      * Get product detail from system product
      *
@@ -36,11 +35,10 @@ interface ProductGeneratorInterface
     public function getSearchListItem(\Magento\Catalog\Model\Product $product);
 
     /**
-     * Get item in bundle options from system product
+     * Get list item from system product
      *
      * @param \Magento\Catalog\Model\Product $product
      * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
      */
-    public function getBundleItem(\Magento\Catalog\Model\Product $product);
-
+    public function getListItem(\Magento\Catalog\Model\Product $product);
 }

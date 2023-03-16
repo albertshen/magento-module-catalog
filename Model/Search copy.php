@@ -33,12 +33,12 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     protected $searchLayerFactory;
 
     /**
-     * @var \AlbertMage\Catalog\Api\Data\LayerFilterInterfaceFactory
+     * @var \AlbertMage\Catalog\Api\Data\FilterInterfaceFactory
      */
     protected $filterInterfaceFactory;
 
     /**
-     * @var \AlbertMage\Catalog\Api\Data\LayerFilterItemInterfaceFactory
+     * @var \AlbertMage\Catalog\Api\Data\FilterItemInterfaceFactory
      */
     protected $filterItemInterfaceFactory;
 
@@ -76,8 +76,8 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
      * @param \Magento\Framework\Webapi\Rest\Request $request
      * @param \Magento\Catalog\Model\Layer\CategoryFactory $categoryLayerFactory
      * @param \Magento\Catalog\Model\Layer\SearchFactory $searchLayerFactory
-     * @param \AlbertMage\Catalog\Api\Data\LayerFilterInterfaceFactory $filterInterfaceFactory
-     * @param \AlbertMage\Catalog\Api\Data\LayerFilterItemInterfaceFactory $filterItemInterfaceFactory,
+     * @param \AlbertMage\Catalog\Api\Data\FilterInterfaceFactory $filterInterfaceFactory
+     * @param \AlbertMage\Catalog\Api\Data\FilterItemInterfaceFactory $filterItemInterfaceFactory,
      * @param \AlbertMage\Catalog\Api\Data\ProductSearchResultsInterfaceFactory $productSearchResultsFactory
      * @param \AlbertMage\Catalog\Api\ProductManagementInterface $productManagement
      * @param \Magento\Framework\Api\SearchCriteriaFactory $searchCriteriaFactory
@@ -89,8 +89,8 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
         \Magento\Framework\Webapi\Rest\Request $request,
         \Magento\Catalog\Model\Layer\CategoryFactory $categoryLayerFactory,
         \Magento\Catalog\Model\Layer\SearchFactory $searchLayerFactory,
-        \AlbertMage\Catalog\Api\Data\LayerFilterInterfaceFactory $filterInterfaceFactory,
-        \AlbertMage\Catalog\Api\Data\LayerFilterItemInterfaceFactory $filterItemInterfaceFactory,
+        \AlbertMage\Catalog\Api\Data\FilterInterfaceFactory $filterInterfaceFactory,
+        \AlbertMage\Catalog\Api\Data\FilterItemInterfaceFactory $filterItemInterfaceFactory,
         \AlbertMage\Catalog\Api\Data\ProductSearchResultsInterfaceFactory $productSearchResultsFactory,
         \AlbertMage\Catalog\Api\ProductManagementInterface $productManagement,
         \Magento\Framework\Api\SearchCriteriaFactory $searchCriteriaFactory,
@@ -162,8 +162,6 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
                 $filters[] = $this->createFilter($field, $value);
             } elseif (count($arr = explode('-', $value)) > 1) {
                 $arr = ['from' => (int) $arr[0] , 'to' => (int) $arr[1]];
-                // $filed = $field.'.from';
-                // $arr = '30';
                 $collection->addFieldToFilter($field, $arr);
                 // no need to add the filter into results because only the next layer will show for price. For instance, price=0-10 -> 1-6, 7-10
                 $filters[] = $this->createFilter($field, $value);
@@ -227,37 +225,37 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     /**
      * Returns filter list.
      *
-     * @param \Magento\Catalog\Model\Layer\Filter\AbstractFilter[] $filters
-     * @return \AlbertMage\Catalog\Api\Data\LayerFilterInterface[].
+     * @param \Filter\AbstractFilter[] $filters
+     * @return \AlbertMage\Catalog\Api\Data\FilterInterface[].
      */
     private function createFilterList($filters)
     {
 
-        $filterOptions = [];
+        $newFilters = [];
         
         foreach ($filters as $filter) {
-            $filterOption = $this->filterInterfaceFactory->create();
+            $newFilter = $this->filterInterfaceFactory->create();
             //Gives the request param name such as 'cat' for Category, 'price' for Price
-            $filterOption->setField($filter->getRequestVar());
-            $filterOption->setLabel($filter->getName());
+            $newFilter->setField($filter->getRequestVar());
+            $newFilter->setLabel($filter->getName());
             $items = $filter->getItems(); //Gives all available filter options in that particular filter
             $filterItems = [];
             foreach($items as $item)
             {
                 $filterItem = $this->filterItemInterfaceFactory->create();
-                $filterItem->setLabel(strip_tags($item->getLabel()));
+                $filterItem->setDisplay(strip_tags($item->getLabel()));
                 $filterItem->setValue($item->getValue());
                 $filterItem->setCount($item->getCount());
                 $filterItems[] = $filterItem;
             }
             if(count($filterItems) > 0)
             {
-                $filterOption->setItems($filterItems);
-                $filterOptions[] = $filterOption;
+                $newFilter->setItems($filterItems);
+                $newFilters[] = $newFilter;
             }
         }
 
-        return $filterOptions;
+        return $newFilters;
     }
 
     /**
@@ -265,7 +263,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
      *
      * @param string $field
      * @param mixed $value
-     * @return \AlbertMage\Catalog\Api\Data\LayerFilterInterface.
+     * @return \AlbertMage\Catalog\Api\Data\FilterInterface.
      */
     private function createFilter($field, $value)
     {
@@ -278,7 +276,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     /**
      * Attach is Selected.
      *
-     * @param \AlbertMage\Catalog\Api\Data\LayerFilterInterface[] $filterOptions
+     * @param \AlbertMage\Catalog\Api\Data\FilterInterface[] $filterOptions
      * @param \Magento\Framework\Api\Search\FilterGroup[] $filterGroups
      * @return $this
      */

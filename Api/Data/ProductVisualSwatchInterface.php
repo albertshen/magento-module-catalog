@@ -4,6 +4,8 @@
  */
 namespace AlbertMage\Catalog\Api\Data;
 
+use AlbertMage\Catalog\Api\Data\ProductAttributeInterface;
+
 /**
  * Interface ProductVisualSwatch
  * @author Albert Shen <albertshen1206@gmail.com>

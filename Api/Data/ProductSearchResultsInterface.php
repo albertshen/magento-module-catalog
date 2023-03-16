@@ -19,14 +19,14 @@ interface ProductSearchResultsInterface extends SearchResultsInterface
     /**
      * Get product list.
      *
-     * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface[]
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface[]
      */
     public function getItems();
 
     /**
      * Set product list.
      *
-     * @param \AlbertMage\Catalog\Api\Data\ProductListItemInterface[] $items
+     * @param \AlbertMage\Catalog\Api\Data\ProductInterface[] $items
      * @return $this
      */
     public function setItems(array $items);
@@ -34,14 +34,14 @@ interface ProductSearchResultsInterface extends SearchResultsInterface
     /**
      * Get filter list.
      *
-     * @return \AlbertMage\Catalog\Api\Data\FilterInterface[]|null
+     * @return \AlbertMage\Catalog\Api\Data\LayerFilterInterface[]|null
      */
     public function getFilterOptions();
 
     /**
      * Set filter list.
      *
-     * @param \AlbertMage\Catalog\Api\Data\FilterInterface[] $filterOptions
+     * @param \AlbertMage\Catalog\Api\Data\LayerFilterInterface[] $filterOptions
      * @return $this
      */
     public function setFilterOptions(array $filterOptions);

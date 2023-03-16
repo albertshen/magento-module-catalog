@@ -2,9 +2,9 @@
 /**
  * Copyright © PHP Digital, Inc. All rights reserved.
  */
-namespace AlbertMage\Catalog\Model;
+namespace AlbertMage\Catalog\Model\Layer;
 
-use AlbertMage\Catalog\Api\Data\FilterItemInterface;
+use AlbertMage\Catalog\Api\Data\LayerFilterItemInterface;
 use Magento\Framework\Model\AbstractModel;
 
 /**
@@ -12,23 +12,23 @@ use Magento\Framework\Model\AbstractModel;
  *
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-class FilterItem extends AbstractModel implements FilterItemInterface
+class FilterItem extends AbstractModel implements LayerFilterItemInterface
 {
 
     /**
      * {@inheritdoc}
      */
-    public function getDisplay()
+    public function getLabel()
     {
-        return $this->getData(self::KEY_DISPLAY);
+        return $this->getData(self::KEY_LABEL);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setDisplay($display)
+    public function setLabel($label)
     {
-        return $this->setData(self::KEY_DISPLAY, $display);
+        return $this->setData(self::KEY_LABEL, $label);
     }
 
     /**

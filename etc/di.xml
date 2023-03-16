@@ -6,18 +6,13 @@
     <preference for="AlbertMage\Catalog\Api\Data\ProductMediaInterface" type="AlbertMage\Catalog\Model\Product\Media"/>
     <preference for="AlbertMage\Catalog\Api\Data\ConfigurableOptionInterface" type="AlbertMage\Catalog\Model\ConfigurableProduct\Attribute"/>
     <preference for="AlbertMage\Catalog\Api\Data\ConfigurableOptionValueInterface" type="AlbertMage\Catalog\Model\ConfigurableProduct\OptionValue"/>
-    <preference for="AlbertMage\Catalog\Api\Data\ProductListItemInterface" type="AlbertMage\Catalog\Model\ProductListItem"/>
     <preference for="AlbertMage\Catalog\Api\Data\CategoryInterface" type="AlbertMage\Catalog\Model\Category"/>
-    <preference for="AlbertMage\Catalog\Api\Data\FilterInterface" type="AlbertMage\Catalog\Model\Filter"/>
-    <preference for="AlbertMage\Catalog\Api\Data\FilterItemInterface" type="AlbertMage\Catalog\Model\FilterItem"/>
+    <preference for="AlbertMage\Catalog\Api\Data\LayerFilterInterface" type="AlbertMage\Catalog\Model\Layer\Filter"/>
+    <preference for="AlbertMage\Catalog\Api\Data\LayerFilterItemInterface" type="AlbertMage\Catalog\Model\Layer\FilterItem"/>
     <preference for="AlbertMage\Catalog\Api\Data\ProductSearchResultsInterface" type="AlbertMage\Catalog\Model\ProductSearchResults"/>
     <preference for="AlbertMage\Catalog\Api\ProductManagementInterface" type="AlbertMage\Catalog\Model\ProductManagement"/>
     <preference for="AlbertMage\Catalog\Api\CategoryManagementInterface" type="AlbertMage\Catalog\Model\CategoryManagement"/>
     <preference for="AlbertMage\Catalog\Api\SearchInterface" type="AlbertMage\Catalog\Model\Search"/>
     <preference for="AlbertMage\Catalog\Api\ProductGeneratorInterface" type="AlbertMage\Catalog\Model\ProductGenerator"/>
-    <type name="AlbertMage\Catalog\Api\ProductGeneratorInterface">
-        <arguments>
-            <argument name="swatchImageCode" xsi:type="string">color</argument>
-        </arguments>
-    </type>
+    <preference for="AlbertMage\Catalog\Api\Data\ProductVisualSwatchInterface" type="AlbertMage\Catalog\Model\Product\VisualSwatch"/>
 </config>

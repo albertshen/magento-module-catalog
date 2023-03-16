@@ -4,24 +4,18 @@
  */
 namespace AlbertMage\Catalog\Model;
 
+use AlbertMage\Catalog\Api\Data\ProductInterface;
 use AlbertMage\Catalog\Api\ProductGeneratorInterfaceFactory;
+use AlbertMage\Catalog\Api\ProductCacheInterface;
+use AlbertMage\Core\Model\Cache\RedisAdapter as Cache;
 use Magento\Catalog\Model\ProductFactory;
-use Magento\Swatches\Helper\Data as SwatchHelper;
-use AlbertMage\Catalog\Model\Product\ColorFactory;
-use AlbertMage\Catalog\Model\Product\SizeFactory;
-use AlbertMage\Catalog\Model\Product\MediaFactory;
-use AlbertMage\Catalog\Model\Product\AttributeFactory as ProductAttributeFactory;
-use AlbertMage\Catalog\Model\ConfigurableProduct\AttributeFactory as ConfigurableAttributeFactory;
-use AlbertMage\Catalog\Model\ConfigurableProduct\OptionValueFactory;
-use AlbertMage\Catalog\Model\ProductFactory as NewProductFactory;
-use AlbertMage\Catalog\Api\Data\ProductListItemInterfaceFactory;
-use AlbertMage\Catalog\Api\ProductManagementInterface;
-use Magento\InventorySalesApi\Api\GetProductSalableQtyInterface;
+use Magento\Framework\Webapi\ServiceOutputProcessor;
+use Magento\Framework\Webapi\ServiceInputProcessor;
 
 /**
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-class ProductManagement implements ProductManagementInterface
+class ProductManagement implements ProductCacheInterface
 {
 
     /**
@@ -29,6 +23,10 @@ class ProductManagement implements ProductManagementInterface
      */
     protected $productGeneratorInterfaceFactory;
 
+    /**
+     * @var Cache
+     */
+    protected $cache;
 
     /**
      * @var ProductFactory
@@ -36,414 +34,186 @@ class ProductManagement implements ProductManagementInterface
     protected $productFactory;
 
     /**
-     * @var NewProductFactory
+     * @var ServiceOutputProcessor
      */
-    protected $newProductFactory;
+    protected $serviceOutputProcessor;
 
     /**
-     * @var ConfigurableAttributeFactory
+     * @var ServiceInputProcessor
      */
-    protected $configurableAttributeFactory;
-
-    /**
-     * @var ProductAttributeFactory
-     */
-    protected $productAttributeFactory;
-
-    /**
-     * @var OptionValueFactory
-     */
-    protected $optionValueFactory;
-
-    /**
-     * @var MediaFactory
-     */
-    protected $mediaFactory;
-
-    /**
-     * @var SwatchHelper
-     */
-    protected $switchHelper;
-
-    /**
-     * @var ProductListItemInterfaceFactory
-     */
-    protected $productListItemInterfaceFactory;
-
-    /**
-     * @var GetProductSalableQtyInterface
-     */
-    protected $getProductSalableQty;
-
-    /**
-     * @var array
-     */
-    protected $showAttributes;
-
-    /**
-     * @var string
-     */
-    protected $swatchImageCode;
+    protected $serviceInputProcessor;
 
     /**
      * @param ProductGeneratorInterfaceFactory $productGeneratorInterfaceFactory
+     * @param Cache $cache
      * @param ProductFactory $productFactory
-     * @param NewProductFactory $newProductFactory
-     * @param ConfigurableAttributeFactory $configurableAttributeFactory
-     * @param ProductAttributeFactory $productAttributeFactory
-     * @param OptionValueFactory $optionValueFactory
-     * @param MediaFactory $mediaFactory
-     * @param SwatchHelper $switchHelper
-     * @param ProductListItemInterfaceFactory $productListItemInterfaceFactory
-     * @param GetProductSalableQtyInterface $getProductSalableQty
-     * @param array $showAttributes
-     * @param string $swatchImageCode
+     * @param ServiceOutputProcessor $serviceOutputProcessor
+     * @param ServiceInputProcessor $serviceInputProcessor
      */
     public function __construct(
         ProductGeneratorInterfaceFactory $productGeneratorInterfaceFactory,
+        Cache $cache,
         ProductFactory $productFactory,
-        NewProductFactory $newProductFactory,
-        ConfigurableAttributeFactory $configurableAttributeFactory,
-        ProductAttributeFactory $productAttributeFactory,
-        OptionValueFactory $optionValueFactory,
-        MediaFactory $mediaFactory,
-        SwatchHelper $switchHelper,
-        ProductListItemInterfaceFactory $productListItemInterfaceFactory,
-        GetProductSalableQtyInterface $getProductSalableQty,
-        // array $showAttributes,
-        // string $swatchImageCode
+        ServiceOutputProcessor $serviceOutputProcessor,
+        ServiceInputProcessor $serviceInputProcessor
     )
     {
         $this->productGeneratorInterfaceFactory = $productGeneratorInterfaceFactory;
+        $this->cache = $cache;
+        $this->serviceOutputProcessor = $serviceOutputProcessor;
+        $this->serviceInputProcessor = $serviceInputProcessor;
         $this->productFactory = $productFactory;
-        $this->newProductFactory = $newProductFactory;
-        $this->configurableAttributeFactory = $configurableAttributeFactory;
-        $this->productAttributeFactory = $productAttributeFactory;
-        $this->optionValueFactory = $optionValueFactory;
-        $this->mediaFactory = $mediaFactory;
-        $this->switchHelper = $switchHelper;
-        $this->productListItemInterfaceFactory = $productListItemInterfaceFactory;
-        $this->getProductSalableQty = $getProductSalableQty;
-        // $this->showAttributes = $showAttributes ?? ['color'];
-        // $this->swatchImageCode = $swatchImageCode ?? 'color';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getProduct($productId)
+    public function getDetail($productId)
     {
-        $product = $this->productFactory->create()->load($productId);
-        //return $this->productGeneratorInterfaceFactory->create()->getDetail($product);
-        return $this->productGeneratorInterfaceFactory->create()->getCategoryListItem($product);
-        return $this->createProductDetail($product);
+        $data = $this->cache->get($this->getDetailCacheKey($productId), function ($item) use ($productId) {
+            $product = $this->productGeneratorInterfaceFactory->create()->getDetail(
+                $this->productFactory->create()->load($productId)
+            );
+            $item->expiresAfter(self::CACHE_EXPIRE_TIME);
+            return $this->serviceOutputProcessor->convertValue($product, ProductInterface::class);
+        });
+        return $this->serviceInputProcessor->convertValue($data, ProductInterface::class);
     }
 
     /**
-     * Get product by id
+     * {@inheritdoc}
+     */
+    public function getCategoryListItem($productId)
+    {
+        $data = $this->cache->get($this->getCategoryListItemCacheKey($productId), function ($item) use ($productId) {
+            $product = $this->productGeneratorInterfaceFactory->create()->getCategoryListItem(
+                $this->productFactory->create()->load($productId)
+            );
+            $item->expiresAfter(self::CACHE_EXPIRE_TIME);
+            return $this->serviceOutputProcessor->convertValue($product, ProductInterface::class);
+        });
+        return $this->serviceInputProcessor->convertValue($data, ProductInterface::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSearchListItem($productId)
+    {
+        $data = $this->cache->get($this->getSearchListItemCacheKey($productId), function ($item) use ($productId) {
+            $product = $this->productGeneratorInterfaceFactory->create()->getSearchListItem(
+                $this->productFactory->create()->load($productId)
+            );
+            $item->expiresAfter(self::CACHE_EXPIRE_TIME);
+            return $this->serviceOutputProcessor->convertValue($product, ProductInterface::class);
+        });
+        return $this->serviceInputProcessor->convertValue($data, ProductInterface::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListItem($productId)
+    {
+        $data = $this->cache->get($this->getListItemCacheKey($productId), function ($item) use ($productId) {
+            $product = $this->productGeneratorInterfaceFactory->create()->getListItem(
+                $this->productFactory->create()->load($productId)
+            );
+            $item->expiresAfter(self::CACHE_EXPIRE_TIME);
+            return $this->serviceOutputProcessor->convertValue($product, ProductInterface::class);
+        });
+        return $this->serviceInputProcessor->convertValue($data, ProductInterface::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function refreshDetailCache($productId)
+    {
+        $this->cache->clear(getCategoryListItemCacheKey($productId));
+        $this->getDetail($productId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function refreshCategoryListItemCache($productId)
+    {
+        $this->cache->clear(getCategoryListItemCacheKey($productId));
+        $this->getCategoryListItem($productId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function refreshSearchListItemCache($productId)
+    {
+        $this->cache->clear(getSearchListItemCacheKey($productId));
+        $this->getSearchListItem($productId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function refreshListItemCache($productId)
+    {
+        $this->cache->clear(getListItemCacheKey($productId));
+        $this->getListItem($productId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function refreshAllProductCache($productId)
+    {
+        $this->refreshDetailCache($productId);
+
+        $this->refreshCategoryListItemCache($productId);
+        
+        $this->refreshSearchListItemCache($productId);
+
+        $this->refreshListItemCache($productId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function cleanAllProductCache()
+    {
+        $this->cache->clear(self::CACHE_PREFIX_PRODUCT);
+    }
+
+    /**
+     * Get product detail cache key
      * 
      * @param int $productId
-     * @param boolean $cache
-     * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface
+     * @return string
      */
-    public function getProductListItemById($productId, $cached = true)
+    private function getDetailCacheKey(int $productId)
     {
-        
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $cache = $objectManager->get(\AlbertMage\Core\Model\Cache\RedisAdapter::class);
-
-        if ($cached) {
-            //$cache->clear('data.product_list');
-            $data = $cache->get($this->getProductListItemCacheKey($productId), function ($item) use ($productId, $objectManager) {
-                $product = $this->productFactory->create()->load($productId);
-                $item->expiresAfter(3600);
-                $newProduct = $this->createProductListItem($product);
-                $serviceOutputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceOutputProcessor::class);
-                return $serviceOutputProcessor->convertValue($newProduct, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
-            });
-            $serviceInputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceInputProcessor::class);
-            return $serviceInputProcessor->convertValue($data, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
-        }
-
-        return $this->createProductListItem($product);
+        return self::CACHE_PREFIX_PRODUCT_DETAIL.'.'.$productId;
     }
 
     /**
-     * Get product
+     * Get category product list item cache key
      * 
-     * @param \Magento\Catalog\Model\Product
-     * @param boolean $cache
-     * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface
+     * @param int $productId
+     * @return string
      */
-    public function getProductListItem(\Magento\Catalog\Model\Product $product, $cached = true)
+    private function getCategoryListItemCacheKey(int $productId)
     {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $cache = $objectManager->get(\AlbertMage\Core\Model\Cache\RedisAdapter::class);
-
-        if ($cached) {
-            //$cache->clear('data.product_list');
-            $data = $cache->get($this->getProductListItemCacheKey($product->getId()), function ($item) use ($product, $objectManager) {
-                $item->expiresAfter(3600);
-                $newProduct = $this->createProductListItem($product);
-                $serviceOutputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceOutputProcessor::class);
-                return $serviceOutputProcessor->convertValue($newProduct, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
-            });
-            $serviceInputProcessor = $objectManager->get(\Magento\Framework\Webapi\ServiceInputProcessor::class);
-            return $serviceInputProcessor->convertValue($data, \AlbertMage\Catalog\Api\Data\ProductListItemInterface::class);
-        }
-
-        return $this->createProductListItem($product);
-
+        return self::CACHE_PREFIX_PRODUCT_CATEGORY_LIST.'.'.$productId;
     }
 
     /**
-     * Create product
+     * Get search product list item cache key
      * 
-     * @param \Magento\Catalog\Model\Product
-     * @return \AlbertMage\Catalog\Api\Data\ProductListItemInterface
+     * @param int $productId
+     * @return string
      */
-    public function createProductListItem(\Magento\Catalog\Model\Product $product)
+    private function getSearchListItemCacheKey(int $productId)
     {
-        $newProduct = $this->productListItemInterfaceFactory->create();
-        $newProduct->setId($product->getId());
-        $newProduct->setName($product->getName());
-        $newProduct->setThumbnail($product->getMediaConfig()->getMediaUrl($product->getThumbnail()));
-        $newProduct->setPrice($product->getPrice());
-        if ($product->getTypeId() == 'configurable') {
-            $product = $this->getDefaultProduct($product);
-            $newProduct->setThumbnail($product->getMediaConfig()->getMediaUrl($product->getThumbnail()));
-            $newProduct->setPrice($product->getPrice());
-        }
-        return $newProduct;
-    }
-
-    /**
-     * Create product detail by product
-     * 
-     * @param \Magento\Catalog\Model\Product $product
-     * @return \AlbertMage\Catalog\Api\Data\ProductInterface
-     */
-    private function createProductDetail(\Magento\Catalog\Model\Product $product)
-    {
-
-        $productDetail = $this->newProductFactory->create();
-
-        $productDetail->setId($product->getId());
-        $productDetail->setName($product->getName());
-        $productDetail->setSku($product->getSku());
-        $productDetail->setTypeId($product->getTypeId());
-        //$productDetail->setPreOrderNote();
-        $productDetail->setDescription($product->getDescription());
-
-        //Set Media Gallery
-        $this->setMediaGallery($productDetail, $product);
-
-        //Set stock
-        $this->setStock($productDetail, $product);
-
-        $productDetail->setAvailable($product->isAvailable());
-
-        if ($product->getTypeId() == 'simple') {
-            $productDetail->setPrice($product->getPrice());
-            $productDetail->setSpecialPrice($product->getSpecialPrice());
-            //Prepare product attributes
-            $this->setProductAttributes($productDetail, $product);
-        }
-
-        // foreach($product->getTypeInstance()->getOptions($product) as $iii) {
-        //     var_dump($iii->getTitle());
-        //     var_dump(get_class_methods($iii));exit;
-        // }
-        //var_dump($product->getTypeInstance()->getOptions($product));exit;
-     // var_dump($product->getTypeInstance()->getOptionsIds($product));exit;
-        
-       //var_dump($product->getTypeInstance()->getChildrenIds(2046));exit;
-        //var_dump(get_class_methods($product->getTypeInstance()));exit;
-
-        if ($product->getTypeId() == 'configurable') {
-
-            //Prepare children products
-            $this->setChildrenProducts($productDetail, $product);
-
-            //Prepare attribute filter
-            $this->setConfigurableAttributes($productDetail, $product);
-        }
-
-        return $productDetail;
-    }
-
-    /**
-     * Set product attributes
-     * 
-     * @param \AlbertMage\Catalog\Model\Product $productDetail
-     * @param \Magento\Catalog\Model\Product $product
-     * @return void
-     */
-    private function setProductAttributes(
-        \AlbertMage\Catalog\Model\Product $productDetail,
-        \Magento\Catalog\Model\Product $product
-    ) {
-        $productAttributes = [];
-        foreach($product->getAttributes() as $attribute) {
-            $productAttribute = $this->productAttributeFactory->create();
-            if (in_array($attribute->getAttributeCode(), $this->showAttributes)) {
-                $productAttribute->setLabel($attribute->getDefaultFrontendLabel());
-                $productAttribute->setCode($attribute->getAttributeCode());
-                $productAttribute->setValue($product->getData($attribute->getAttributeCode()));
-                $productAttributes[] = $productAttribute;
-            }
-        }
-        $productDetail->setAttributes($productAttributes);
-    }
-
-    /**
-     * Set children products
-     * 
-     * @param \AlbertMage\Catalog\Model\Product $productDetail
-     * @param \Magento\Catalog\Model\Product $product
-     * @return void
-     */
-    private function setChildrenProducts(
-        \AlbertMage\Catalog\Model\Product $productDetail,
-        \Magento\Catalog\Model\Product $product
-    ) {
-        $usedProductIds = $product->getTypeInstance()->getUsedProductIds($product);
-        $childrenProducts = [];
-        foreach ($usedProductIds as $usedProductId) {
-            $usedProduct = $this->productFactory->create()->load($usedProductId);
-            if (!$usedProduct->isDisabled()) {
-                $childrenProducts[] = $this->createProductDetail($usedProduct);
-            }
-        }
-        $productDetail->setChildrenProducts($childrenProducts);
-    }
-
-    /**
-     * Set configurable attributes
-     * 
-     * @param \AlbertMage\Catalog\Model\Product $productDetail
-     * @param \Magento\Catalog\Model\Product $product
-     * @return void
-     */
-    private function setConfigurableAttributes(
-        \AlbertMage\Catalog\Model\Product $productDetail,
-        \Magento\Catalog\Model\Product $product
-    ) {
-        $productAttributeOptions = $product->getTypeInstance()->getConfigurableAttributesAsArray($product);
-        $configurableAttributes = [];
-        foreach($productAttributeOptions as $key => $item) {
-           $configurableAttribute = $this->configurableAttributeFactory->create();
-           $configurableAttribute->setId($item['attribute_id']);
-           $configurableAttribute->setLabel($item['label']);
-           $configurableAttribute->setCode($item['attribute_code']);
-           $optionValues = [];
-           foreach($item['values'] as $optionItem) {
-                $optionValue = $this->optionValueFactory->create();
-                $optionValue->setValueIndex($optionItem['value_index']);
-                $optionValue->setLabel($optionItem['label']);
-                if ($imageUrl = $this->getSwatchImage($item['attribute_code'], $optionItem['value_index'], $product)) {
-                    $optionValue->setSwatchImage($imageUrl);
-                }
-                $optionValues[] = $optionValue;
-           }
-           $configurableAttribute->setValues($optionValues);
-           $configurableAttributes[] = $configurableAttribute;
-        }
-        $productDetail->setConfigurableAttributes($configurableAttributes);
-    }
-
-    /**
-     * Set media gallery
-     * 
-     * @param \AlbertMage\Catalog\Model\Product $productDetail
-     * @param \Magento\Catalog\Model\Product $product
-     * @return void
-     */
-    private function setMediaGallery(
-        \AlbertMage\Catalog\Model\Product $productDetail,
-        \Magento\Catalog\Model\Product $product
-    ) {
-        $mediaGallery = [];
-        foreach($product->getMediaGalleryImages() as $item) {
-            $media = $this->mediaFactory->create();
-            $media->setMediaType($item->getMediaType());
-            $media->setImageUrl($item->getUrl());
-            if ($item->getMediaType() == 'upload-video') {
-                $media->setVideoProvider($item->getVideoProvider());
-                $media->setVideoUrl($product->getMediaConfig()->getMediaUrl($item->getVideoUrl()));
-                if ($item->getVideoTitle()) {
-                    $media->setVideoTitle($item->getVideoTitle());
-                }
-                if ($item->getVideoDescription()) {
-                    $media->setVideoDescription($item->getVideoDescription());
-                }
-            }
-            $mediaGallery[] = $media;
-        }
-        if (!empty($mediaGallery)) {
-            $productDetail->setMediaGallery($mediaGallery);
-        }
-    }
-
-    /**
-     * Get media gallery
-     * 
-     * @param string $code
-     * @param string $attributeId
-     * @param \Magento\Catalog\Model\Product $product
-     * @return string|null
-     */
-    private function getSwatchImage(
-        string $code,
-        string $attributeId,
-        \Magento\Catalog\Model\Product $product
-    ) {
-        if ($code == $this->swatchImageCode) {
-            foreach ($product->getTypeInstance()->getUsedProducts($product) as $item) {
-                if ($attributeId == $item->getData($code)) {
-                    return $item->getMediaGalleryImages()->getFirstItem()->getUrl();
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Set stock
-     * 
-     * @param \AlbertMage\Catalog\Model\Product $productDetail
-     * @param \Magento\Catalog\Model\Product $product
-     * @return void
-     */
-    private function setStock(
-        \AlbertMage\Catalog\Model\Product $productDetail,
-        \Magento\Catalog\Model\Product $product
-    ) {
-        if ($product->getExtensionAttributes()->getStockItem()->getQty()) {
-            $stockId = $product->getExtensionAttributes()->getStockItem()->getStockId();
-            $qty = $this->getProductSalableQty->execute($product->getSku(), $stockId);
-            $productDetail->setStock($qty);
-        }
-    }
-
-    /**
-     * Get default product
-     * 
-     * @param \Magento\Catalog\Model\Product
-     * @return \Magento\Catalog\Model\Product
-     */
-    private function getDefaultProduct(\Magento\Catalog\Model\Product $product)
-    {
-
-        $productCollection = $product->getTypeInstance()->getUsedProductCollection($product);
-        $productCollection->addAttributeToFilter('is_default', 1);
-        if ($productId = $productCollection->getFirstItem()->getId()) {
-            return $this->productFactory->create()->load($productId);
-        }
-
-        $productCollection = $product->getTypeInstance()->getUsedProductCollection($product);
-        return $this->productFactory->create()->load($productCollection->getFirstItem()->getId());
-
+        return self::CACHE_PREFIX_PRODUCT_SEARCH_LIST.'.'.$productId;
     }
 
     /**
@@ -452,8 +222,8 @@ class ProductManagement implements ProductManagementInterface
      * @param int $productId
      * @return string
      */
-    private function getProductListItemCacheKey(int $productId)
+    private function getListItemCacheKey(int $productId)
     {
-        return \AlbertMage\Catalog\Api\Data\ProductListItemInterface::CACHE_PREFIX.'.'.$productId;
+        return self::CACHE_PREFIX_PRODUCT_LIST.'.'.$productId;
     }
 }

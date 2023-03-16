@@ -246,7 +246,27 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
     /**
      * {@inheritdoc}
      */
-    public function getBundleItem(\Magento\Catalog\Model\Product $product)
+    public function getListItem(\Magento\Catalog\Model\Product $product)
+    {
+        $this->setProduct($product);
+
+        $this->setBaseData();
+
+        $this->setThumbnail();
+
+        $this->newProduct->setPrice($this->product->getPrice());
+
+        return $this->newProduct;
+    }
+
+
+    /**
+     * Get bundle item from system product
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
+     */
+    private function getBundleItem(\Magento\Catalog\Model\Product $product)
     {
 
         $this->setProduct($product);
@@ -258,6 +278,17 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         $this->newProduct->setPrice($product->getPrice());
 
         return $this->newProduct;
+    }
+
+    /**
+     * Set system product
+     * 
+     * @param \Magento\Catalog\Model\Product $product
+     * @return $this
+     */
+    private function setProduct(\Magento\Catalog\Model\Product $product) {
+        $this->product = $product;
+        return $this;
     }
 
     /**
@@ -390,17 +421,6 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         }
 
         return $this->newProduct;
-    }
-
-    /**
-     * Set system product
-     * 
-     * @param \Magento\Catalog\Model\Product $product
-     * @return $this
-     */
-    private function setProduct(\Magento\Catalog\Model\Product $product) {
-        $this->product = $product;
-        return $this;
     }
 
     /**
@@ -640,3 +660,4 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
     }
 
 }
+

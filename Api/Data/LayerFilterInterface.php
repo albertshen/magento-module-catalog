@@ -5,10 +5,10 @@
 namespace AlbertMage\Catalog\Api\Data;
 
 /**
- * Interface Filter
+ * Interface Layer Filter
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-interface FilterInterface
+interface LayerFilterInterface
 {
 
     const KEY_FIELD = 'field';
@@ -50,14 +50,14 @@ interface FilterInterface
     /**
      * Returns filter items.
      *
-     * @return \AlbertMage\Catalog\Api\Data\FilterItemInterface[].
+     * @return \AlbertMage\Catalog\Api\Data\LayerFilterItemInterface[].
      */
     public function getItems();
 
     /**
      * Sets the filter items.
      *
-     * @param \AlbertMage\Catalog\Api\Data\FilterItemInterface[] $items
+     * @param \AlbertMage\Catalog\Api\Data\LayerFilterItemInterface[] $items
      * @return $this
      */
     public function setItems($items);

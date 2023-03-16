@@ -2,9 +2,9 @@
 /**
  * Copyright © PHP Digital, Inc. All rights reserved.
  */
-namespace AlbertMage\Catalog\Model;
+namespace AlbertMage\Catalog\Model\Layer;
 
-use AlbertMage\Catalog\Api\Data\FilterInterface;
+use AlbertMage\Catalog\Api\Data\LayerFilterInterface;
 use Magento\Framework\Model\AbstractModel;
 
 /**
@@ -12,7 +12,7 @@ use Magento\Framework\Model\AbstractModel;
  *
  * @author Albert Shen <albertshen1206@gmail.com>
  */
-class Filter extends AbstractModel implements FilterInterface
+class Filter extends AbstractModel implements LayerFilterInterface
 {
 
     /**
