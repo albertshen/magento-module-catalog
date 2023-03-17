@@ -13,13 +13,19 @@
 		</resources>
 	</route>
 	<route url="/V1/app/products/:productId" method="GET">
-		<service class="AlbertMage\Catalog\Api\ProductManagementInterface" method="getProduct"/>
+		<service class="AlbertMage\Catalog\Api\ProductManagementInterface" method="getDetail"/>
 		<resources>
 			<resource ref="anonymous"/>
 		</resources>
 	</route>
 	<route url="/V1/app/products/search" method="GET">
 		<service class="AlbertMage\Catalog\Api\SearchInterface" method="search"/>
+		<resources>
+			<resource ref="anonymous"/>
+		</resources>
+	</route>
+	<route url="/V1/app/products" method="GET">
+		<service class="AlbertMage\Catalog\Api\SearchInterface" method="category"/>
 		<resources>
 			<resource ref="anonymous"/>
 		</resources>

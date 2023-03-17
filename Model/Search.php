@@ -6,6 +6,8 @@ namespace AlbertMage\Catalog\Model;
 
 use Magento\Framework\App\ObjectManager;
 
+use \Magento\Framework\Exception\LocalizedException;
+
 /**
  * @author Albert Shen <albertshen1206@gmail.com>
  */
@@ -16,11 +18,6 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
      * @var \Magento\Framework\Webapi\Rest\Request
      */
     protected $_request;
-
-    /**
-     * @var \Magento\Catalog\Model\Layer\FilterList
-     */
-    protected $filterList;
 
     /**
      * @var \Magento\Catalog\Model\Layer\CategoryFactory
@@ -115,31 +112,55 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     /**
      * {@inheritdoc}
      */
+    public function category()
+    {  
+        if (!$this->_request->getParam('catId')) {
+            throw new LocalizedException(__('category is not exist'));
+        }
+
+        $catId = $this->_request->getParam('catId');
+        $layer = $this->categoryLayerFactory->create();
+        $layer->setCurrentCategory($catId);
+        $filterList = ObjectManager::getInstance()->create(\categoryFilterList::class);
+
+        return $this->doSearch($layer, $filterList);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function search()
     {
-        // build filter
+        if (!$this->_request->getParam('q')) {
+            throw new LocalizedException(__('q is not exist'));
+        }
 
-        // do query
+        $layer = $this->searchLayerFactory->create();
+        $filterList = ObjectManager::getInstance()->create(\searchFilterList::class);
 
-        // build resluts
+        return $this->doSearch($layer, $filterList);
+    }
+
+    /**
+     * Get product list by category
+     * 
+     * @param \Magento\Catalog\Model\Layer $layer
+     * @param \Magento\Catalog\Model\Layer\FilterList $filterList
+     * @return \AlbertMage\Catalog\Api\Data\ProductSearchResultsInterface
+     */
+    public function doSearch(
+        \Magento\Catalog\Model\Layer $layer,
+        \Magento\Catalog\Model\Layer\FilterList $filterList
+    ) {
 
         // Prepare params
-        $page = $this->_request->getParam('page') ?? 1;
-        $pageSize = $this->_request->getParam('pageSize') ?? 20;
-        $catId = $this->_request->getParam('catId');
+        $page = $this->_request->getParam('page') ?? self::DEFAULT_PAGE;
+        $pageSize = $this->_request->getParam('pageSize') ?? self::DEFAULT_PAGE_SIZE;
 
-        $filterParams = $this->_request->getParams();
-        unset($filterParams['page'], $filterParams['pageSize'], $filterParams['catId'], $filterParams['sort']);
+        $requestParams = $this->_request->getParams();
+        unset($requestParams['page'], $requestParams['pageSize'], $requestParams['catId'], $requestParams['sort']);
 
-        // Set category or search mode
-        if ($catId) {
-            $layer = $this->categoryLayerFactory->create();
-            $layer->setCurrentCategory($catId);
-            $filterList = ObjectManager::getInstance()->create(\categoryFilterList::class);
-        } else {
-            $layer = $this->searchLayerFactory->create();
-            $filterList = ObjectManager::getInstance()->create(\searchFilterList::class);
-        }
+        $filterParams = $requestParams;
 
         // Set page and page size
         $collection = $layer->getProductCollection();
@@ -154,25 +175,22 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
             // or relation for field array value. For instance: activity=2,3 (or)
             $filters = [];
 
-            if ($field == 'q') {
-                // if ($this->_request->getParam('q')) {
-                //     $collection->addSearchFilter($this->_request->getParam('q'));
-                // }
-                // The query will be duplicated by Magento\CatalogSearch\Model\Layer\Search\Plugin\CollectionFilter afterFilter function
-                $filters[] = $this->createFilter($field, $value);
-            } elseif (count($arr = explode('-', $value)) > 1) {
+            // if ($this->_request->getParam('q')) {
+            //     $collection->addSearchFilter($this->_request->getParam('q'));
+            // }
+            // The query will be duplicated by Magento\CatalogSearch\Model\Layer\Search\Plugin\CollectionFilter afterFilter function
+            if (count($arr = explode('-', $value)) > 1) {
                 $arr = ['from' => (int) $arr[0] , 'to' => (int) $arr[1]];
-                // $filed = $field.'.from';
-                // $arr = '30';
                 $collection->addFieldToFilter($field, $arr);
                 // no need to add the filter into results because only the next layer will show for price. For instance, price=0-10 -> 1-6, 7-10
                 $filters[] = $this->createFilter($field, $value);
-            } else {
-                $arr = explode(',', $value);
+            } elseif ($arr = explode(',', $value)) {
                 foreach($arr as $item) {
                     $collection->addFieldToFilter($field, $item);
                     $filters[] = $this->createFilter($field, $item);
                 }
+            } else {
+                $filters[] = $this->createFilter($field, $value);
             }
 
             $filterGroup = $this->filterGroupFactory->create();
@@ -180,8 +198,6 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
             $filterGroups[] = $filterGroup;
             
         }
-
-        $searchCriteria = $this->searchCriteriaFactory->create();
 
         // Set sort order
         $sortOrders = [];
@@ -192,19 +208,17 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
             $sortOrder->setField($sort[0]);
             $sortOrder->setDirection($sort[1]);
             $sortOrders[] = $sortOrder;
-            $searchCriteria->setSortOrders($sortOrders);
         }
-
-        // Set search criteria
-        $searchCriteria->setFilterGroups($filterGroups);
-        $searchCriteria->setPageSize($collection->getPageSize());
-        $searchCriteria->setCurrentPage($collection->getCurPage());
 
         // Prepare products
         $products = $collection->getItems();
         $newProducts = [];
         foreach($products as $product) {
-            $newProducts[] = $this->productManagement->getCategoryListItem($product->getId());
+            if ($layer instanceof \Magento\Catalog\Model\Layer\Category) {
+                $newProducts[] = $this->productManagement->getCategoryListItem($product->getId());
+            } else {
+                $newProducts[] = $this->productManagement->getSearchListItem($product->getId());
+            }   
         }
 
         // Prepare $filterOptions in results
@@ -213,6 +227,15 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
 
         // Add is selected status
         $this->attachIsSelectedToFilters($filterOptions, $filterGroups);
+
+        // Set search criteria
+        $searchCriteria = $this->searchCriteriaFactory->create();
+        if (!empty($sortOrders)) {
+            $searchCriteria->setSortOrders($sortOrders);
+        }
+        $searchCriteria->setFilterGroups($filterGroups);
+        $searchCriteria->setPageSize($collection->getPageSize());
+        $searchCriteria->setCurrentPage($collection->getCurPage());
 
         // Set productSearchResults
         $productSearchResults = $this->productSearchResultsFactory->create();
@@ -227,19 +250,19 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     /**
      * Returns filter list.
      *
-     * @param \Magento\Catalog\Model\Layer\Filter\AbstractFilter[] $filters
-     * @return \AlbertMage\Catalog\Api\Data\LayerFilterInterface[].
+     * @param \Filter\AbstractFilter[] $filters
+     * @return \AlbertMage\Catalog\Api\Data\FilterInterface[].
      */
     private function createFilterList($filters)
     {
 
-        $filterOptions = [];
+        $newFilters = [];
         
         foreach ($filters as $filter) {
-            $filterOption = $this->filterInterfaceFactory->create();
+            $newFilter = $this->filterInterfaceFactory->create();
             //Gives the request param name such as 'cat' for Category, 'price' for Price
-            $filterOption->setField($filter->getRequestVar());
-            $filterOption->setLabel($filter->getName());
+            $newFilter->setField($filter->getRequestVar());
+            $newFilter->setLabel($filter->getName());
             $items = $filter->getItems(); //Gives all available filter options in that particular filter
             $filterItems = [];
             foreach($items as $item)
@@ -252,12 +275,12 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
             }
             if(count($filterItems) > 0)
             {
-                $filterOption->setItems($filterItems);
-                $filterOptions[] = $filterOption;
+                $newFilter->setItems($filterItems);
+                $newFilters[] = $newFilter;
             }
         }
 
-        return $filterOptions;
+        return $newFilters;
     }
 
     /**
@@ -265,7 +288,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
      *
      * @param string $field
      * @param mixed $value
-     * @return \AlbertMage\Catalog\Api\Data\LayerFilterInterface.
+     * @return \AlbertMage\Catalog\Api\Data\FilterInterface.
      */
     private function createFilter($field, $value)
     {
@@ -278,7 +301,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
     /**
      * Attach is Selected.
      *
-     * @param \AlbertMage\Catalog\Api\Data\LayerFilterInterface[] $filterOptions
+     * @param \AlbertMage\Catalog\Api\Data\FilterInterface[] $filterOptions
      * @param \Magento\Framework\Api\Search\FilterGroup[] $filterGroups
      * @return $this
      */
@@ -310,5 +333,6 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
         }
         return false;
     }
+
 
 }

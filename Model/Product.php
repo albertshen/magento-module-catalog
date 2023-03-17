@@ -112,6 +112,22 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     /**
      * {@inheritdoc}
      */
+    public function getQty()
+    {
+        return $this->_get(self::QTY);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setQty($qty)
+    {
+        return $this->setData(self::QTY, $qty);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getCategories()
     {
         return $this->_get(self::CATEGORIES);

@@ -27,6 +27,8 @@ interface ProductInterface extends ExtensibleDataInterface
 
     const STOCK = 'stock';
 
+    const QTY = 'qty';
+
     const CATEGORIES = 'categories';
 
     const COLOR = 'color';
@@ -157,6 +159,21 @@ interface ProductInterface extends ExtensibleDataInterface
      * @return $this
      */
     public function setStock($stock);
+
+    /**
+     * Returns the product qty.
+     *
+     * @return float|null Product qty.
+     */
+    public function getQty();
+
+    /**
+     * Sets the product qty.
+     *
+     * @param float $qty
+     * @return $this
+     */
+    public function setQty($qty);
 
     /**
      * Returns the categories.

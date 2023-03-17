@@ -12,10 +12,23 @@ namespace AlbertMage\Catalog\Api;
 interface SearchInterface
 {
 
+    const DEFAULT_PAGE = 1;
+
+    const DEFAULT_PAGE_SIZE = 20;
+
+    /**
+     * Get product list by category
+     *
+     * @return \AlbertMage\Catalog\Api\Data\ProductSearchResultsInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function category();
+
     /**
      * Get product list by search
      *
      * @return \AlbertMage\Catalog\Api\Data\ProductSearchResultsInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function search();
 }
