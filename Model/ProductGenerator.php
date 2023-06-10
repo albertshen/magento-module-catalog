@@ -40,6 +40,11 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
     protected $productFactory;
 
     /**
+     * @var newProductFactory
+     */
+    protected $newProductFactory;
+    
+    /**
      * @var NewProduct
      */
     protected $newProduct;
