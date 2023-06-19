@@ -208,6 +208,22 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     /**
      * {@inheritdoc}
      */
+    public function getShortDescription()
+    {
+        return $this->_get(self::SHORT_DESCRIPTION);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setShortDescription($shortDescription)
+    {
+        return $this->setData(self::SHORT_DESCRIPTION, $shortDescription);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getDescription()
     {
         return $this->_get(self::DESCRIPTION);
@@ -219,6 +235,22 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     public function setDescription($description)
     {
         return $this->setData(self::DESCRIPTION, $description);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTips()
+    {
+        return $this->_get(self::TIPS);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTips($tips)
+    {
+        return $this->setData(self::TIPS, $tips);
     }
 
     /**

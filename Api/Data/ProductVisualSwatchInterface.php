@@ -46,5 +46,20 @@ interface ProductVisualSwatchInterface extends ProductAttributeInterface
      * @return $this
      */
     public function setSwatchImage($swatchImage);
+
+    /**
+     * Get attribute value
+     *
+     * @return int attribute value
+     */
+    public function getValue();
+
+    /**
+     * Set attribute value
+     *
+     * @param int $value
+     * @return $this
+     */
+    public function setValue($value);
     
 }

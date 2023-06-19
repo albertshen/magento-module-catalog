@@ -31,26 +31,26 @@ interface ProductManagementInterface
     public function getDetail($productId);
 
     /**
-     * Get category list item from system product id
+     * Get category list item from system product
      *
-     * @param int $productId
+     * @param \Magento\Catalog\Model\Product $product
      * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
      */
-    public function getCategoryListItem($productId);
+    public function getCategoryListItem(\Magento\Catalog\Model\Product $product);
 
     /**
-     * Get search results list item from system product id
+     * Get search results list item from system product
      *
-     * @param int $productId
+     * @param \Magento\Catalog\Model\Product $product
      * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
      */
-    public function getSearchListItem($productId);
+    public function getSearchListItem(\Magento\Catalog\Model\Product $product);
 
     /**
-     * Get product list from system product id
+     * Get product list from system product
      *
-     * @param int $productId
+     * @param \Magento\Catalog\Model\Product $product
      * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
      */
-    public function getListItem($productId);
+    public function getListItem(\Magento\Catalog\Model\Product $product);
 }

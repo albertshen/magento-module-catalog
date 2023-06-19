@@ -18,6 +18,7 @@ use AlbertMage\Catalog\Model\ConfigurableProduct\OptionValueFactory;
 use AlbertMage\Catalog\Model\ProductFactory as NewProductFactory;
 use AlbertMage\Catalog\Api\Data\ProductListItemInterfaceFactory;
 use AlbertMage\Catalog\Api\ProductManagementInterface;
+use AlbertMage\PageBuilder\Model\DomFactory;
 use Magento\InventorySalesApi\Api\GetProductSalableQtyInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\ConfigurableFactory;
 use Magento\Catalog\Helper\Image as ImageHelper;
@@ -43,7 +44,7 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
      * @var newProductFactory
      */
     protected $newProductFactory;
-    
+
     /**
      * @var NewProduct
      */
@@ -103,6 +104,11 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
      * @var string
      */
     protected $visualSwatchCode;
+
+    /**
+     * @var DomFactory
+     */
+    protected $domFactory;
     
     /**
      * @param ProductFactory $productFactory
@@ -117,6 +123,7 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
      * @param ImageHelper $imageHelper
      * @param GetProductSalableQtyInterface $getProductSalableQty
      * @param ConfigurableFactory $configurableFactory
+     * @param DomFactory $domFactory
      */
     public function __construct(
         ProductFactory $productFactory,
@@ -130,7 +137,8 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         SwatchMediaHelper $swatchMediaHelper,
         ImageHelper $imageHelper,
         GetProductSalableQtyInterface $getProductSalableQty,
-        ConfigurableFactory $configurableFactory
+        ConfigurableFactory $configurableFactory,
+        DomFactory $domFactory
     )
     {
         $this->productFactory = $productFactory;
@@ -146,6 +154,7 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         $this->imageHelper = $imageHelper;
         $this->getProductSalableQty = $getProductSalableQty;
         $this->configurableFactory = $configurableFactory;
+        $this->domFactory = $domFactory;
     }
 
     /**
@@ -163,15 +172,16 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
 
         $this->setPreOrderNote();
 
+        $this->setShortDescription();
+        
         $this->setDescription();
+
+        $this->setTips();
 
         //Set Media Gallery
         $this->setMediaGallery();
 
         if ($product->getTypeId() == 'simple') {
-
-            $this->newProduct->setPrice($product->getPrice());
-            $this->newProduct->setSpecialPrice($product->getSpecialPrice());
 
             //Prepare product attributes
             $this->setProductAttributes();
@@ -204,8 +214,6 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         $this->setBaseData();
 
         $this->setThumbnail();
-
-        $this->newProduct->setPrice($product->getPrice());
 
         if ($parentIds = $this->configurableFactory->create()->getParentIdsByChild($product->getId())) {
 
@@ -243,8 +251,6 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
 
         $this->setThumbnail();
 
-        $this->newProduct->setPrice($product->getPrice());
-
         return $this->newProduct;
     }
 
@@ -258,8 +264,6 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         $this->setBaseData();
 
         $this->setThumbnail();
-
-        $this->newProduct->setPrice($this->product->getPrice());
 
         return $this->newProduct;
     }
@@ -279,8 +283,6 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         $this->setBaseData();
 
         $this->setThumbnail();
-
-        $this->newProduct->setPrice($product->getPrice());
 
         return $this->newProduct;
     }
@@ -400,7 +402,7 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
 
         $this->setBaseData();
 
-         $this->setThumbnail();
+        $this->setThumbnail();
 
         $this->newProduct->setPrice($product->getPrice());
 
@@ -438,6 +440,11 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         $this->newProduct->setName($this->product->getName());
         $this->newProduct->setSku($this->product->getSku());
         $this->newProduct->setTypeId($this->product->getTypeId());
+        $this->newProduct->setPrice($this->product->getPrice());
+
+	    if ($this->product->getSpecialPrice()) {
+            $this->newProduct->setSpecialPrice($this->product->getSpecialPrice());
+        }
 
         //Set available
         $this->newProduct->setAvailable($this->product->isAvailable());
@@ -450,11 +457,13 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
      * @return void
      */
     private function setThumbnail() {
-        $url = $this->imageHelper->init($this->product, 'albertmage_product_list_thumbnail')->setImageFile($this->product->getThumbnail())->getUrl();
-
+        $url = $this->imageHelper->init($this->product, 'albertmage_product_list_thumbnail')->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(FALSE)->resize(500)->setImageFile($this->product->getThumbnail())->getUrl();
         $this->newProduct->setThumbnail($url);
     }
 
+    private function setShortDescription() {
+        $this->newProduct->setShortDescription($this->product->getShortDescription());
+    }
 
     /**
      * Set description
@@ -463,6 +472,18 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
      */
     private function setDescription() {
         $this->newProduct->setDescription($this->product->getDescription());
+    }
+
+    private function setTips() {
+
+        if ($tips = $this->product->getTips()) {
+            $this->newProduct->setTips($this->domFactory->create()->parse($tips));
+        } else {
+            $templateObject = \Magento\Framework\App\ObjectManager::getInstance()->create(\Magento\PageBuilder\Model\Template::class);
+            $template = $templateObject->load(1);
+            $this->newProduct->setTips($this->domFactory->create()->parse($template->getTemplate()));
+        }
+
     }
 
     /**
@@ -536,10 +557,15 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         $productAttributes = [];
         foreach($this->product->getAttributes() as $attribute) {
             $productAttribute = $this->productAttributeFactory->create();
-            if ($attribute->getIndexType() == 'source') {
+            //if ($attribute->getIndexType() == 'source') {
+            if (in_array($attribute->getAttributeCode(), ['material', 'color'])) {
                 $productAttribute->setLabel($attribute->getStoreLabel());
                 $productAttribute->setCode($attribute->getAttributeCode());
-                $productAttribute->setValue($this->product->getData($attribute->getAttributeCode()));
+                $value = $this->product->getAttributeText($attribute->getAttributeCode());
+                if (is_string($value)) {
+                    $value = [$value];
+                }
+                $productAttribute->setValue($value);
                 $productAttributes[] = $productAttribute;
             }
         }

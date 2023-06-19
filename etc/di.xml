@@ -2,8 +2,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="AlbertMage\Catalog\Api\Data\ProductInterface" type="AlbertMage\Catalog\Model\Product"/>
     <preference for="AlbertMage\Catalog\Api\Data\ProductAttributeInterface" type="AlbertMage\Catalog\Model\Product\Attribute"/>
-    <preference for="AlbertMage\Catalog\Api\Data\ProductColorInterface" type="AlbertMage\Catalog\Model\Product\Color"/>
-    <preference for="AlbertMage\Catalog\Api\Data\ProductSizeInterface" type="AlbertMage\Catalog\Model\Product\Size"/>
+<!--     <preference for="AlbertMage\Catalog\Api\Data\ProductColorInterface" type="AlbertMage\Catalog\Model\Product\Color"/>
+    <preference for="AlbertMage\Catalog\Api\Data\ProductSizeInterface" type="AlbertMage\Catalog\Model\Product\Size"/> -->
     <preference for="AlbertMage\Catalog\Api\Data\ProductMediaInterface" type="AlbertMage\Catalog\Model\Product\Media"/>
     <preference for="AlbertMage\Catalog\Api\Data\ConfigurableOptionInterface" type="AlbertMage\Catalog\Model\ConfigurableProduct\Attribute"/>
     <preference for="AlbertMage\Catalog\Api\Data\ConfigurableOptionValueInterface" type="AlbertMage\Catalog\Model\ConfigurableProduct\OptionValue"/>
@@ -16,4 +16,5 @@
     <preference for="AlbertMage\Catalog\Api\SearchInterface" type="AlbertMage\Catalog\Model\Search"/>
     <preference for="AlbertMage\Catalog\Api\ProductGeneratorInterface" type="AlbertMage\Catalog\Model\ProductGenerator"/>
     <preference for="AlbertMage\Catalog\Api\Data\ProductVisualSwatchInterface" type="AlbertMage\Catalog\Model\Product\VisualSwatch"/>
+    <preference for="AlbertMage\Catalog\Api\RelatedProductsInterface" type="AlbertMage\Catalog\Model\RelatedProducts"/>
 </config>

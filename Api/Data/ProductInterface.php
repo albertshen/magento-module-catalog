@@ -37,7 +37,11 @@ interface ProductInterface extends ExtensibleDataInterface
 
     const PRE_ORDER_NOTE = 'pre_order_note';
 
+    const SHORT_DESCRIPTION = 'short_description';
+
     const DESCRIPTION = 'description';
+
+    const TIPS = 'tips';
 
     const THUMBNAIL = 'thumbnail';
 
@@ -253,19 +257,48 @@ interface ProductInterface extends ExtensibleDataInterface
     public function setPreOrderNote($preOrderNote);
 
     /**
-     * Returns the product description.
+     * Returns the product shortDescription.
      *
      * @return string|null.
+     */
+    public function getShortDescription();
+
+    /**
+     * Sets the product description.
+     *
+     * @param string $shortDescription
+     * @return $this
+     */
+    public function setShortDescription($shortDescription);
+    /**
+     * Returns the product description.
+     *
+     * @return \AlbertMage\PageBuilder\Api\Data\ElementInterface[]|null.
      */
     public function getDescription();
 
     /**
      * Sets the product description.
      *
-     * @param string $description
+     * @param \AlbertMage\PageBuilder\Api\Data\ElementInterface[] $description
      * @return $this
      */
     public function setDescription($description);
+
+    /**
+     * Returns the product tips.
+     *
+     * @return \AlbertMage\PageBuilder\Api\Data\ElementInterface[]|null.
+     */
+    public function getTips();
+
+    /**
+     * Sets the product tips.
+     *
+     * @param \AlbertMage\PageBuilder\Api\Data\ElementInterface[] $tips
+     * @return $this
+     */
+    public function setTips($tips);
 
     /**
      * Returns the product thumbnail.

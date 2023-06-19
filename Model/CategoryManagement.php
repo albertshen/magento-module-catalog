@@ -5,6 +5,7 @@
 namespace AlbertMage\Catalog\Model;
 
 use AlbertMage\Catalog\Api\Data\CategoryInterface;
+use Magento\Framework\UrlInterface;
 
 /**
  * @author Albert Shen <albertshen1206@gmail.com>
@@ -33,22 +34,30 @@ class CategoryManagement implements \AlbertMage\Catalog\Api\CategoryManagementIn
     protected $categoryInterfaceFactory;
 
     /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $storeManager;
+
+    /**
      * @param \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
      * @param \Magento\Catalog\Helper\Category
      * @param \Magento\Catalog\Model\CategoryRepository $categoryRepository
      * @param \AlbertMage\Catalog\Api\Data\CategoryInterfaceFactory $categoryInterfaceFactory
+     * @param \Magento\Store\Model\StoreManagerInterface
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollectionFactory,
         \Magento\Catalog\Helper\Category $categoryHelper,
         \Magento\Catalog\Model\CategoryRepository $categoryRepository,
-        \AlbertMage\Catalog\Api\Data\CategoryInterfaceFactory $categoryInterfaceFactory
+        \AlbertMage\Catalog\Api\Data\CategoryInterfaceFactory $categoryInterfaceFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     )
     {
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->categoryHelper = $categoryHelper;
         $this->categoryRepository = $categoryRepository;
         $this->categoryInterfaceFactory = $categoryInterfaceFactory;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -66,9 +75,23 @@ class CategoryManagement implements \AlbertMage\Catalog\Api\CategoryManagementIn
     public function getChildrenCategoriesById($catId)
     {
         $category = $this->categoryRepository->get($catId);
+
         if ($category->hasChildren()) {
             return $this->generateCategoryTree($category->getChildrenCategories());
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCategoryById($catId)
+    {
+        $category = $this->categoryRepository->get($catId);
+        $item = $this->getCategoryData($category);
+        if ($category->hasChildren()) {
+            $item->setChildren($this->generateCategoryTree($category->getChildrenCategories()));
+        }
+        return $item;
     }
 
     /**
@@ -143,7 +166,8 @@ class CategoryManagement implements \AlbertMage\Catalog\Api\CategoryManagementIn
         //$category->getProductCollection()->count() Avaliable count, $category->getProductCount() All count
         $newCategory->setProductCount($category->getProductCollection()->count());
         $newCategory->setUrl($category->getUrl());
-        $newCategory->setThumbnail($category->getImageUrl());
+        $imageUrl = $this->storeManager->getStore()->getBaseUrl().substr($category->getImageUrl(), 1);
+        $newCategory->setThumbnail($imageUrl);
 
         return $newCategory;
     }

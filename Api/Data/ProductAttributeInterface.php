@@ -50,14 +50,14 @@ interface ProductAttributeInterface
     /**
      * Get attribute value
      *
-     * @return int attribute value
+     * @return string[] attribute value
      */
     public function getValue();
 
     /**
      * Set attribute value
      *
-     * @param int $value
+     * @param string[] $value
      * @return $this
      */
     public function setValue($value);

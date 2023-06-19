@@ -25,4 +25,12 @@ interface CategoryManagementInterface
      * @return \AlbertMage\Catalog\Api\Data\CategoryInterface[]
      */
     public function getChildrenCategoriesById($catId);
+
+    /**
+     * Get category by id
+     * 
+     * @param int $catId
+     * @return \AlbertMage\Catalog\Api\Data\CategoryInterface
+     */
+    public function getCategoryById($catId);
 }
