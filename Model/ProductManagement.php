@@ -85,9 +85,23 @@ class ProductManagement implements ProductCacheInterface
     /**
      * {@inheritdoc}
      */
+    public function getListItem(\Magento\Catalog\Model\Product $product)
+    {$this->refreshListItemCache($product->getId());
+        $data = $this->cache->get($this->getListItemCacheKey($product->getId()), function ($item) use ($product) {
+            $product = $this->productGeneratorInterfaceFactory->create()->getListItem(
+                $product
+            );
+            $item->expiresAfter(self::CACHE_EXPIRE_TIME);
+            return $this->serviceOutputProcessor->convertValue($product, ProductInterface::class);
+        });
+        return $this->serviceInputProcessor->convertValue($data, ProductInterface::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getCategoryListItem(\Magento\Catalog\Model\Product $product)
     {
-        return $this->productGeneratorInterfaceFactory->create()->getCategoryListItem($product);
         $data = $this->cache->get($this->getCategoryListItemCacheKey($product->getId()), function ($item) use ($product) {
             $product = $this->productGeneratorInterfaceFactory->create()->getCategoryListItem($product);
             $item->expiresAfter(self::CACHE_EXPIRE_TIME);
@@ -112,23 +126,10 @@ class ProductManagement implements ProductCacheInterface
     /**
      * {@inheritdoc}
      */
-    public function getListItem(\Magento\Catalog\Model\Product $product)
-    {return $this->productGeneratorInterfaceFactory->create()->getListItem($product);
-        $data = $this->cache->get($this->getListItemCacheKey($product->getId()), function ($item) use ($product) {
-            $product = $this->productGeneratorInterfaceFactory->create()->getListItem($product);
-            $item->expiresAfter(self::CACHE_EXPIRE_TIME);
-            return $this->serviceOutputProcessor->convertValue($product, ProductInterface::class);
-        });
-        return $this->serviceInputProcessor->convertValue($data, ProductInterface::class);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function refreshDetailCache($productId)
     {
-        $this->cache->clear(getCategoryListItemCacheKey($productId));
-        $this->getDetail($productId);
+        $this->cache->clear($this->getCategoryListItemCacheKey($productId));
+        $this->getDetail($this->productFactory->create()->load($productId));
     }
 
     /**
@@ -136,8 +137,8 @@ class ProductManagement implements ProductCacheInterface
      */
     public function refreshCategoryListItemCache($productId)
     {
-        $this->cache->clear(getCategoryListItemCacheKey($productId));
-        $this->getCategoryListItem($productId);
+        $this->cache->clear($this->getCategoryListItemCacheKey($productId));
+        $this->getCategoryListItem($this->productFactory->create()->load($productId));
     }
 
     /**
@@ -145,8 +146,8 @@ class ProductManagement implements ProductCacheInterface
      */
     public function refreshSearchListItemCache($productId)
     {
-        $this->cache->clear(getSearchListItemCacheKey($productId));
-        $this->getSearchListItem($productId);
+        $this->cache->clear($this->getSearchListItemCacheKey($productId));
+        $this->getSearchListItem($this->productFactory->create()->load($productId));
     }
 
     /**
@@ -154,8 +155,8 @@ class ProductManagement implements ProductCacheInterface
      */
     public function refreshListItemCache($productId)
     {
-        $this->cache->clear(getListItemCacheKey($productId));
-        $this->getListItem($productId);
+        $this->cache->clear($this->getListItemCacheKey($productId));
+        //$this->getListItem($this->productFactory->create()->load($productId));
     }
 
     /**

@@ -214,7 +214,7 @@ class Search implements \AlbertMage\Catalog\Api\SearchInterface
         $newProducts = [];
         foreach($collection->getItems() as $product) {
             if ($layer instanceof \Magento\Catalog\Model\Layer\Category) {
-                $newProducts[] = $this->productManagement->getCategoryListItem($product);
+                $newProducts[] = $this->productManagement->getListItem($product);
             } else {
                 $newProducts[] = $this->productManagement->getSearchListItem($product->getId());
             }   

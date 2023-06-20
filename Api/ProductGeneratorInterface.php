@@ -19,6 +19,14 @@ interface ProductGeneratorInterface
     public function getDetail(\Magento\Catalog\Model\Product $product);
 
     /**
+     * Get list item from system product
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
+     */
+    public function getListItem(\Magento\Catalog\Model\Product $product);
+
+    /**
      * Get category list item from system product
      *
      * @param \Magento\Catalog\Model\Product $product
@@ -35,10 +43,10 @@ interface ProductGeneratorInterface
     public function getSearchListItem(\Magento\Catalog\Model\Product $product);
 
     /**
-     * Get list item from system product
+     * Get list item from cart product items
      *
      * @param \Magento\Catalog\Model\Product $product
      * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
      */
-    public function getListItem(\Magento\Catalog\Model\Product $product);
+    public function getCartListItem(\Magento\Catalog\Model\Product $product);
 }

@@ -206,6 +206,49 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
     /**
      * {@inheritdoc}
      */
+    public function getListItem(\Magento\Catalog\Model\Product $product)
+    {
+
+        $this->setProduct($product);
+
+        $this->setBaseData();
+
+        $this->setThumbnail();
+
+        $this->setStock();
+
+        if ($product->getTypeId() == 'simple') {
+
+            //Prepare product attributes
+            $this->setProductAttributes();
+        }
+
+        if ($parentIds = $this->configurableFactory->create()->getParentIdsByChild($product->getId())) {
+
+            $parentProduct = $this->productFactory->create()->load($parentIds[0]);
+
+            $this->setMainVisualSwatchCode($parentProduct);
+
+            $defaultAttributeId = $product->getData($this->visualSwatchCode);
+
+            $this->setListConfigurableProduct($parentProduct, $defaultAttributeId);
+
+        }
+
+        if ($product->getTypeId() == 'configurable') {
+
+            $this->setMainVisualSwatchCode($product);
+
+            $this->setListConfigurableProduct($product);
+
+        }
+
+        return $this->newProduct;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
     public function getCategoryListItem(\Magento\Catalog\Model\Product $product)
     {
 
@@ -257,7 +300,7 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
     /**
      * {@inheritdoc}
      */
-    public function getListItem(\Magento\Catalog\Model\Product $product)
+    public function getCartListItem(\Magento\Catalog\Model\Product $product)
     {
         $this->setProduct($product);
 
@@ -265,9 +308,10 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
 
         $this->setThumbnail();
 
+        $this->setStock();
+
         return $this->newProduct;
     }
-
 
     /**
      * Get bundle item from system product
@@ -471,7 +515,7 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
      * @return void
      */
     private function setDescription() {
-        $this->newProduct->setDescription($this->product->getDescription());
+        $this->newProduct->setDescription($this->domFactory->create()->parse($this->product->getDescription()));
     }
 
     private function setTips() {
@@ -540,6 +584,10 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
      * @return int
      */
     private function getStock($product) {
+        if (!$stockItem = $product->getExtensionAttributes()->getStockItem()) {
+            $product = $product->load($product->getId());
+        }
+
         if ($product->getExtensionAttributes()->getStockItem()->getQty()) {
             $stockId = $product->getExtensionAttributes()->getStockItem()->getStockId();
             $qty = $this->getProductSalableQty->execute($product->getSku(), $stockId);
@@ -562,11 +610,13 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
                 $productAttribute->setLabel($attribute->getStoreLabel());
                 $productAttribute->setCode($attribute->getAttributeCode());
                 $value = $this->product->getAttributeText($attribute->getAttributeCode());
-                if (is_string($value)) {
-                    $value = [$value];
+                if (is_string($value) || is_array($value)) {
+                    if (is_string($value)) {
+                        $value = [$value];
+                    }
+                    $productAttribute->setValue($value);
+                    $productAttributes[] = $productAttribute;
                 }
-                $productAttribute->setValue($value);
-                $productAttributes[] = $productAttribute;
             }
         }
         if (!empty($productAttributes)) {
