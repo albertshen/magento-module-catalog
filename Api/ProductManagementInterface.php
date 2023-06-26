@@ -53,4 +53,12 @@ interface ProductManagementInterface
      * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
      */
     public function getListItem(\Magento\Catalog\Model\Product $product);
+
+    /**
+     * Get product list from system product by id
+     *
+     * @param int $productId
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
+     */
+    public function getListItemById($productId);
 }

@@ -74,7 +74,7 @@ class RelatedProducts implements \AlbertMage\Catalog\Api\RelatedProductsInterfac
         $collection->addAttributeToFilter('entity_id', ['in' => $relatedProductIds]);
 
         // Prepare products
-        $newProduct = [];
+        $newProducts = [];
         foreach($collection->getItems() as $product) {
             $newProducts[] = $this->productManagement->getListItem($product); 
         }

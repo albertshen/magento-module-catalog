@@ -86,10 +86,26 @@ class ProductManagement implements ProductCacheInterface
      * {@inheritdoc}
      */
     public function getListItem(\Magento\Catalog\Model\Product $product)
-    {$this->refreshListItemCache($product->getId());
+    {
+        // $this->refreshListItemCache($product->getId());
         $data = $this->cache->get($this->getListItemCacheKey($product->getId()), function ($item) use ($product) {
             $product = $this->productGeneratorInterfaceFactory->create()->getListItem(
                 $product
+            );
+            $item->expiresAfter(self::CACHE_EXPIRE_TIME);
+            return $this->serviceOutputProcessor->convertValue($product, ProductInterface::class);
+        });
+        return $this->serviceInputProcessor->convertValue($data, ProductInterface::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListItemById($productId)
+    {
+        $data = $this->cache->get($this->getListItemCacheKey($productId), function ($item) use ($productId) {
+            $product = $this->productGeneratorInterfaceFactory->create()->getListItem(
+                $this->productFactory->create()->load($productId)
             );
             $item->expiresAfter(self::CACHE_EXPIRE_TIME);
             return $this->serviceOutputProcessor->convertValue($product, ProductInterface::class);
