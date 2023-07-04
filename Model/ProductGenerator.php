@@ -484,10 +484,11 @@ class ProductGenerator implements \AlbertMage\Catalog\Api\ProductGeneratorInterf
         $this->newProduct->setName($this->product->getName());
         $this->newProduct->setSku($this->product->getSku());
         $this->newProduct->setTypeId($this->product->getTypeId());
+        $this->newProduct->setOriginalPrice($this->product->getPrice());
         $this->newProduct->setPrice($this->product->getPrice());
 
 	    if ($specialPrice = $this->product->getSpecialPrice()) {
-            $this->newProduct->setSpecialPrice($specialPrice);
+            $this->newProduct->setPrice($specialPrice);
         }
 
         //Set available

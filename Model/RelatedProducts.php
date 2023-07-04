@@ -1,9 +1,7 @@
 <?php
 /**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © PHP Digital, Inc. All rights reserved.
  */
-
 namespace AlbertMage\Catalog\Model;
 
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;

@@ -144,17 +144,17 @@ class Product extends AbstractExtensibleObject implements ProductInterface
     /**
      * {@inheritdoc}
      */
-    public function getSpecialPrice()
+    public function getOriginalPrice()
     {
-        return $this->_get(self::SPECIAL_PRICE);
+        return $this->_get(self::ORIGINAL_PRICE);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setSpecialPrice($specialPrice)
+    public function setOriginalPrice($originalPrice)
     {
-        return $this->setData(self::SPECIAL_PRICE, $specialPrice);
+        return $this->setData(self::ORIGINAL_PRICE, $originalPrice);
     }
 
     /**

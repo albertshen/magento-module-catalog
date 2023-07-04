@@ -31,6 +31,22 @@ interface ProductManagementInterface
     public function getDetail($productId);
 
     /**
+     * Get product list from system product
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
+     */
+    public function getListItem(\Magento\Catalog\Model\Product $product);
+
+    /**
+     * Get product list from system product by id
+     *
+     * @param int $productId
+     * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
+     */
+    public function getListItemById($productId);
+
+    /**
      * Get category list item from system product
      *
      * @param \Magento\Catalog\Model\Product $product
@@ -47,18 +63,74 @@ interface ProductManagementInterface
     public function getSearchListItem(\Magento\Catalog\Model\Product $product);
 
     /**
-     * Get product list from system product
-     *
-     * @param \Magento\Catalog\Model\Product $product
-     * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
-     */
-    public function getListItem(\Magento\Catalog\Model\Product $product);
-
-    /**
-     * Get product list from system product by id
+     * Clean the detail cache
      *
      * @param int $productId
-     * @return \AlbertMage\Catalog\Api\Data\ProductInterface $product
+     * @return void
      */
-    public function getListItemById($productId);
+    public function cleanDetailCache($productId);
+
+    /**
+     * Clean list item cache
+     *
+     * @param int $productId
+     * @return void
+     */
+    public function cleanListItemCache($productId);
+
+    /**
+     * Clean product cache
+     *
+     * @param int $productId
+     * @return void
+     */
+    public function cleanProductCache($productId);
+
+    /**
+     * Clean all product cache
+     *
+     * @param int $productId
+     * @return void
+     */
+    public function cleanAllProductCache();
+    
+    /**
+     * Refresh the detail cache
+     *
+     * @param int $productId
+     * @return void
+     */
+    public function refreshDetailCache($productId);
+
+    /**
+     * Refresh list item cache
+     *
+     * @param int $productId
+     * @return void
+     */
+    public function refreshListItemCache($productId);
+    
+    /**
+     * Refresh category list item cache cache
+     *
+     * @param int $productId
+     * @return void
+     */
+    public function refreshCategoryListItemCache($productId);
+
+    /**
+     * Refresh search list item cache
+     *
+     * @param int $productId
+     * @return void
+     */
+    public function refreshSearchListItemCache($productId);
+
+    /**
+     * Refresh all list item cache cache
+     *
+     * @param int $productId
+     * @return void
+     */
+    public function refreshAllProductCache($productId);
 }

@@ -17,4 +17,11 @@
     <preference for="AlbertMage\Catalog\Api\ProductGeneratorInterface" type="AlbertMage\Catalog\Model\ProductGenerator"/>
     <preference for="AlbertMage\Catalog\Api\Data\ProductVisualSwatchInterface" type="AlbertMage\Catalog\Model\Product\VisualSwatch"/>
     <preference for="AlbertMage\Catalog\Api\RelatedProductsInterface" type="AlbertMage\Catalog\Model\RelatedProducts"/>
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="CleanProductCache" xsi:type="object">AlbertMage\Catalog\Console\Command\CleanProductCacheCommand</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

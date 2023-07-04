@@ -21,7 +21,7 @@ interface ProductInterface extends ExtensibleDataInterface
 
     const PRICE = 'price';
 
-    const SPECIAL_PRICE = 'special_price';
+    const ORIGINAL_PRICE = 'original_price';
 
     const AVAILABLE = 'available';
 
@@ -120,19 +120,19 @@ interface ProductInterface extends ExtensibleDataInterface
     public function setPrice($price);
 
     /**
-     * Returns the product special price.
+     * Returns the product original price.
      *
-     * @return float|null product special price.
+     * @return float|null product original price.
      */
-    public function getSpecialPrice();
+    public function getOriginalPrice();
 
     /**
-     * Sets the product special price.
+     * Sets the product original price.
      *
-     * @param float $specialPrice
+     * @param float $originalPrice
      * @return $this
      */
-    public function setSpecialPrice($specialPrice);
+    public function setOriginalPrice($originalPrice);
 
     /**
      * Returns the product available.

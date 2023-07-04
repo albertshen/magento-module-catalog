@@ -69,9 +69,7 @@ class ProductManagement implements ProductCacheInterface
      * {@inheritdoc}
      */
     public function getDetail($productId)
-    {return $this->productGeneratorInterfaceFactory->create()->getDetail(
-                $this->productFactory->create()->load($productId)
-            );
+    {
         $data = $this->cache->get($this->getDetailCacheKey($productId), function ($item) use ($productId) {
             $product = $this->productGeneratorInterfaceFactory->create()->getDetail(
                 $this->productFactory->create()->load($productId)
@@ -87,7 +85,6 @@ class ProductManagement implements ProductCacheInterface
      */
     public function getListItem(\Magento\Catalog\Model\Product $product)
     {
-        // $this->refreshListItemCache($product->getId());
         $data = $this->cache->get($this->getListItemCacheKey($product->getId()), function ($item) use ($product) {
             $product = $this->productGeneratorInterfaceFactory->create()->getListItem(
                 $product
@@ -142,10 +139,52 @@ class ProductManagement implements ProductCacheInterface
     /**
      * {@inheritdoc}
      */
+    public function cleanDetailCache($productId)
+    {
+        $this->cache->clear($this->getCategoryListItemCacheKey($productId));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function cleanListItemCache($productId)
+    {
+        $this->cache->clear($this->getListItemCacheKey($productId));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function cleanProductCache($productId)
+    {
+        $this->cleanDetailCache($productId);
+        $this->cleanListItemCache($productId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function cleanAllProductCache()
+    {
+        $this->cache->clear(self::CACHE_PREFIX_PRODUCT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function refreshDetailCache($productId)
     {
         $this->cache->clear($this->getCategoryListItemCacheKey($productId));
         $this->getDetail($this->productFactory->create()->load($productId));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function refreshListItemCache($productId)
+    {
+        $this->cache->clear($this->getListItemCacheKey($productId));
+        $this->getListItem($this->productFactory->create()->load($productId));
     }
 
     /**
@@ -169,15 +208,6 @@ class ProductManagement implements ProductCacheInterface
     /**
      * {@inheritdoc}
      */
-    public function refreshListItemCache($productId)
-    {
-        $this->cache->clear($this->getListItemCacheKey($productId));
-        //$this->getListItem($this->productFactory->create()->load($productId));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function refreshAllProductCache($productId)
     {
         $this->refreshDetailCache($productId);
@@ -190,14 +220,6 @@ class ProductManagement implements ProductCacheInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function cleanAllProductCache()
-    {
-        $this->cache->clear(self::CACHE_PREFIX_PRODUCT);
-    }
-
-    /**
      * Get product detail cache key
      * 
      * @param int $productId
@@ -206,6 +228,17 @@ class ProductManagement implements ProductCacheInterface
     private function getDetailCacheKey(int $productId)
     {
         return self::CACHE_PREFIX_PRODUCT_DETAIL.'.'.$productId;
+    }
+
+    /**
+     * Get product list item cache key
+     * 
+     * @param int $productId
+     * @return string
+     */
+    private function getListItemCacheKey(int $productId)
+    {
+        return self::CACHE_PREFIX_PRODUCT_LIST.'.'.$productId;
     }
 
     /**
@@ -230,14 +263,4 @@ class ProductManagement implements ProductCacheInterface
         return self::CACHE_PREFIX_PRODUCT_SEARCH_LIST.'.'.$productId;
     }
 
-    /**
-     * Get product list item cache key
-     * 
-     * @param int $productId
-     * @return string
-     */
-    private function getListItemCacheKey(int $productId)
-    {
-        return self::CACHE_PREFIX_PRODUCT_LIST.'.'.$productId;
-    }
 }
