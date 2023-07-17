@@ -100,11 +100,13 @@ class RelatedProducts implements \AlbertMage\Catalog\Api\RelatedProductsInterfac
         foreach($product->getAttributes() as $attribute) {
            if (in_array($attribute->getAttributeCode(), ['material', 'color'])) {
                 $value = $product->getData($attribute->getAttributeCode());
-                $arr = explode(',', $value);
-                $arr = array_map(function($val) {
-                    return (int) $val;
-                }, $arr);
-                $collection->addAttributeToFilter($attribute->getAttributeCode(), ['in' => $arr]); //or
+                if ($value) {
+                    $arr = explode(',', $value);
+                    $arr = array_map(function($val) {
+                        return (int) $val;
+                    }, $arr);
+                    $collection->addAttributeToFilter($attribute->getAttributeCode(), ['in' => $arr]); //or
+                }
            }
         }
 
